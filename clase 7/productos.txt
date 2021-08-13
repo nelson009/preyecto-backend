@@ -1,0 +1,20 @@
+[
+	{
+		"title": "samsung galaxy A02",
+		"price": 23.999,
+		"thumnail": "https://images.fravega.com/s250/aa3e46f439aca165f24104d5c4cf6da5.jpg.webp",
+		"id": 1
+	},
+	{
+		"title": "samsung galaxy A32",
+		"price": 39.999,
+		"thumnail": "https://images.fravega.com/s250/a17ab6f3ad0b86f06376c0947efe88f5.jpg.webp",
+		"id": 2
+	},
+	{
+		"title": "samsung galaxy A12",
+		"price": 30.999,
+		"thumnail": "https://images.fravega.com/s250/c85140313a6c3e17f406cb82311a756a.jpg.webp",
+		"id": 3
+	}
+]
