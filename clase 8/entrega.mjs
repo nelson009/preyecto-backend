@@ -11,7 +11,7 @@ const server = app.listen(port,() => {
     console.log(`El servidor es escuchando en el puest ${port}`);
 })
 
-server.on("erro",(error)=>{
+server.on("error",(error)=>{
     console.error(error);
 })
 
@@ -30,7 +30,7 @@ class Memoria {
         return this.productos
     }
     getProductById(id){
-        const result = this.productos.find(elemento => elemento.id == id) 
+        const result = this.productos.find(elemento => elemento.id === +id) 
         return result
     }
     addProduct(producto){
@@ -39,7 +39,8 @@ class Memoria {
         return producto
     }
     updateProduct(ProductoActualizado,id){
-        return this.productos[id-1] = {...ProductoActualizado, id: parseInt(id)}
+        const indexProducto = this.productos.findIndex(elemento => elemento.id === +id)
+        return this.productos[indexProducto] = {...ProductoActualizado, id: +id}
     }
     deleteProduct(id,productDelete){
         const result = this.productos.filter(elemento => elemento.id !== parseInt(id) )
@@ -52,7 +53,8 @@ const memoria = new Memoria()
 productoRouter.get("/productos/listar", (req,res) => {
     const result = memoria.getProduct()
     if(result.length > 0){
-        res.status(200).send(JSON.stringify(result))
+        // res.status(200).send(JSON.stringify(result))
+        res.status(200).send(result)
     }else{
         res.status(404).send({error:"no hay productos cargados"})
     }
