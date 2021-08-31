@@ -1,7 +1,6 @@
 import express from "express"
 import path from "path";
 import {Memoria} from "./classmemoria.mjs"
-import handlebars from "express-handlebars"
 
 const app = express()
 const port = 8080;
@@ -82,25 +81,9 @@ productoRouter.delete("/productos/borrar/:id", (req,res) =>{
     
 })
 
-const ENGINE_NAME = "hbs";
-app.engine(
-    ENGINE_NAME,
-    handlebars({
-        extname: "hbs",
-        layoutsDir: `${__dirname}/views/layouts`,
-        defaultLayout: "index.hbs",
-    })
-);
+app.set("view engine", "ejs" )
 
-app.set("views", "./views");
-app.set("view engine",ENGINE_NAME);
-
-productoRouter.get("/productos/vista", (req,res) => {
+productoRouter.get("/productos/vista", (req,res) =>{
     const arrayProducts = memoria.getProduct()
-    let bolean=
-    arrayProducts.length > 0? true : false
-    res.render("main.hbs", {
-        listExists: bolean,
-        arrayProducts,
-    })
+    res.render("pages/index.ejs", {arrayProducts})
 })
