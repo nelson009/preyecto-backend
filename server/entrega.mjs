@@ -1,16 +1,25 @@
 import express from "express"
 import path from "path";
 import {Memoria} from "./classmemoria.mjs"
+import handlebars from "express-handlebars"
+import * as socketIo from 'socket.io'
+import fs from "fs";
 
+const __dirname = path.resolve()
 const app = express()
 const port = 8080;
+const memoria = new Memoria()
+const messages= []
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(`${__dirname}/public`))
 
 const server = app.listen(port,() => {
     console.log(`El servidor es escuchando en el puest ${port}`);
 })
+
+const io = new socketIo.Server(server)
 
 server.on("error",(error)=>{
     console.error(error);
@@ -18,11 +27,6 @@ server.on("error",(error)=>{
 
 const productoRouter = express.Router();
 app.use('/api', productoRouter)
-
-const __dirname = path.resolve()
-app.use(express.static(`${__dirname}/public`))
-
-const memoria = new Memoria()
 
 productoRouter.get("/productos/listar", (req,res) => {
     const result = memoria.getProduct()
@@ -46,13 +50,15 @@ productoRouter.get("/productos/listar/:id", (req,res) => {
 })
 
 productoRouter.post("/productos/guardar", (req,res) =>{
-    
     const  producto  = req.body 
     console.log(producto.precio , producto.title , producto.thumbnail);
-    
     if(producto.precio && producto.title && producto.thumbnail){
         memoria.addProduct(producto)
+        const arrayProducts = memoria.getProduct()
+
+        io.sockets.emit('cargarProductos',arrayProducts);
         res.redirect('/')
+       
         return
     } 
     res.status(404).send({error:"informacion incompleta"})
@@ -81,10 +87,48 @@ productoRouter.delete("/productos/borrar/:id", (req,res) =>{
     
 })
 
-app.set("views", `${__dirname}/views`)
-app.set("view engine", "pug")
+app.get("/",(req,res) => {
+    res.sendFile(__dirname + '/public/index.html');
+})
 
-productoRouter.get("/productos/vista", (req,res) =>{
+const ENGINE_NAME = "hbs";
+app.engine(
+    ENGINE_NAME,
+    handlebars({
+        extname: "hbs",
+        layoutsDir: `${__dirname}/views/layouts`,
+        partialsDir: __dirname + '/views/partials/',
+        defaultLayout: "index.hbs",
+    })
+);
+app.set("views", "./views");
+app.set("view engine",ENGINE_NAME);
+
+productoRouter.get("/productos/vista", (req,res) => {
     const arrayProducts = memoria.getProduct()
-    res.render("pages/index.pug", {arrayProducts})
+    let bolean=
+    arrayProducts.length > 0? true : false
+    res.render("main.hbs", {
+        listExists: bolean,
+        arrayProducts,
+    })
+})
+
+io.on("connection", socket => {
+    const arrayProducts = memoria.getProduct()
+    console.log('se conecto en el backen');
+    socket.emit('cargarProductos', arrayProducts)
+    socket.emit("messages", messages)
+
+    socket.on("new-message", (data) => {
+        messages.push(data);
+        io.sockets.emit("messages",messages);
+        fs.writeFile("./registro.txt",JSON.stringify(messages,null,"\t"), (error) => {
+            if (error) {
+              console.log(`Hubo un error:\n    ${error.message}`);
+            } else {
+              console.log("Archivo grabado!");
+            }
+        });
+    })
 })

@@ -126,7 +126,15 @@ form fieldset {
 .footerAjustar {
   margin-top: 180px;
 }
-
+.email-color {
+  color: #282ca6;
+}
+.fecha-color {
+  color: green;
+}
+.text-color {
+  color: brown;
+}
 /* media query */
 @media (min-width: 576px) {
   .videoFondo {
