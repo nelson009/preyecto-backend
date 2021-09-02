@@ -81,9 +81,10 @@ productoRouter.delete("/productos/borrar/:id", (req,res) =>{
     
 })
 
-app.set("view engine", "ejs" )
+app.set("views", `${__dirname}/views`)
+app.set("view engine", "pug")
 
 productoRouter.get("/productos/vista", (req,res) =>{
     const arrayProducts = memoria.getProduct()
-    res.render("pages/index.ejs", {arrayProducts})
+    res.render("pages/index.pug", {arrayProducts})
 })
