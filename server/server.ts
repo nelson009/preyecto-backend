@@ -1,34 +1,53 @@
-import express from "express"
+import express, {Request, Response} from "express"
 import path from "path";
-import {Memoria} from "./classmemoria.mjs"
+import {Memoria} from "./classmemoria.js"
 import handlebars from "express-handlebars"
 import * as socketIo from 'socket.io'
 import fs from "fs";
+import http from "http"
 
 const __dirname = path.resolve()
 const app = express()
 const port = 8080;
 const memoria = new Memoria()
-const messages= []
+
+const productoRouter = express.Router();
+const server = http.createServer(app)
+const io = new socketIo.Server(server)
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(`${__dirname}/public`))
-
-const server = app.listen(port,() => {
-    console.log(`El servidor es escuchando en el puest ${port}`);
-})
-
-const io = new socketIo.Server(server)
-
-server.on("error",(error)=>{
-    console.error(error);
-})
-
-const productoRouter = express.Router();
 app.use('/api', productoRouter)
 
-productoRouter.get("/productos/listar", (req,res) => {
+app.set("views", "./views");
+app.set("view engine","hbs");
+app.engine(
+    "hbs",
+    handlebars({
+        extname: "hbs",
+        layoutsDir: `${__dirname}/views/layouts`,
+        partialsDir: __dirname + '/views/partials/',
+        defaultLayout: "index.hbs",
+    })
+);
+
+interface Message{
+    email:string;
+    fecha:string;
+    texto:string;
+}
+const messages :Array<Message>= []
+
+server.listen(port,(error?: Error) => {
+    if (error) {
+        throw Error(`Error inicando el servidor: ${error}`);
+    }
+   console.log(`El servidor es escuchando en el port ${port}`);
+})
+
+
+productoRouter.get("/productos/listar", (req:Request,res:Response) => {
     const result = memoria.getProduct()
     if(result.length > 0){
         // res.status(200).send(JSON.stringify(result))
@@ -39,8 +58,8 @@ productoRouter.get("/productos/listar", (req,res) => {
     
 })
 
-productoRouter.get("/productos/listar/:id", (req,res) => {
-    const { id } = req.params
+productoRouter.get("/productos/listar/:id", (req:Request,res:Response) => {
+    const { id }:any= req.params
     const result = memoria.getProductById(id)
     if(result){
         res.status(200).send(JSON.stringify(result))
@@ -49,7 +68,7 @@ productoRouter.get("/productos/listar/:id", (req,res) => {
     res.status(404).send({error:"producto no encontrado"})
 })
 
-productoRouter.post("/productos/guardar", (req,res) =>{
+productoRouter.post("/productos/guardar", (req:Request,res:Response) =>{
     const  producto  = req.body 
     console.log(producto.precio , producto.title , producto.thumbnail);
     if(producto.precio && producto.title && producto.thumbnail){
@@ -64,8 +83,8 @@ productoRouter.post("/productos/guardar", (req,res) =>{
     res.status(404).send({error:"informacion incompleta"})
 })
 
-productoRouter.put("/productos/actualizar/:id", (req,res) =>{
-    const { id } = req.params
+productoRouter.put("/productos/actualizar/:id", (req:Request,res:Response) =>{
+    const { id }:any = req.params
     const ProductoActualizado = req.body
     const productoExistente = memoria.getProductById(id)
     if(ProductoActualizado.title&&ProductoActualizado.precio&&ProductoActualizado.thumbnail&&productoExistente){
@@ -76,8 +95,8 @@ productoRouter.put("/productos/actualizar/:id", (req,res) =>{
     
 })
 
-productoRouter.delete("/productos/borrar/:id", (req,res) =>{
-    const { id } = req.params
+productoRouter.delete("/productos/borrar/:id", (req:Request,res:Response) =>{
+    const { id } :any= req.params
     const productDelete = memoria.getProductById(id)
     if(productDelete){
         res.status(200).send( memoria.deleteProduct(id,productDelete)) 
@@ -91,20 +110,7 @@ app.get("/",(req,res) => {
     res.sendFile(__dirname + '/public/index.html');
 })
 
-const ENGINE_NAME = "hbs";
-app.engine(
-    ENGINE_NAME,
-    handlebars({
-        extname: "hbs",
-        layoutsDir: `${__dirname}/views/layouts`,
-        partialsDir: __dirname + '/views/partials/',
-        defaultLayout: "index.hbs",
-    })
-);
-app.set("views", "./views");
-app.set("view engine",ENGINE_NAME);
-
-productoRouter.get("/productos/vista", (req,res) => {
+productoRouter.get("/productos/vista", (req:Request,res:Response) => {
     const arrayProducts = memoria.getProduct()
     let bolean=
     arrayProducts.length > 0? true : false
