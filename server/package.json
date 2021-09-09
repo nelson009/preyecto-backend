@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "ServerES6toJs5": "node_modules/.bin/babel ./server.es6.mjs -o ./server.js -w",
-    "ServerES6toJS5": "node_modules/.bin/tsc -w",
+    "ServerTStoJS5": "node_modules/.bin/tsc -w",
     "start": "nodemon server.js"
   },
   "keywords": [],

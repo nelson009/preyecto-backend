@@ -1,6 +1,6 @@
 import express, {Request, Response} from "express"
 import path from "path";
-import {Memoria} from "./classmemoria.js"
+import {Memoria} from "./memoria.js"
 import handlebars from "express-handlebars"
 import * as socketIo from 'socket.io'
 import fs from "fs";
@@ -37,12 +37,15 @@ interface Message{
     fecha:string;
     texto:string;
 }
-const messages :Array<Message>= []
+const messages :Array<Message>= [];
 
-server.listen(port,(error?: Error) => {
+server.on("error",(error)=>{
     if (error) {
         throw Error(`Error inicando el servidor: ${error}`);
     }
+})
+server.listen(port,() => {
+   
    console.log(`El servidor es escuchando en el port ${port}`);
 })
 
@@ -59,7 +62,8 @@ productoRouter.get("/productos/listar", (req:Request,res:Response) => {
 })
 
 productoRouter.get("/productos/listar/:id", (req:Request,res:Response) => {
-    const { id }:any= req.params
+    const { id }= req.params
+    // const parametroid = req.params.id
     const result = memoria.getProductById(id)
     if(result){
         res.status(200).send(JSON.stringify(result))
@@ -84,7 +88,7 @@ productoRouter.post("/productos/guardar", (req:Request,res:Response) =>{
 })
 
 productoRouter.put("/productos/actualizar/:id", (req:Request,res:Response) =>{
-    const { id }:any = req.params
+    const { id } = req.params
     const ProductoActualizado = req.body
     const productoExistente = memoria.getProductById(id)
     if(ProductoActualizado.title&&ProductoActualizado.precio&&ProductoActualizado.thumbnail&&productoExistente){
@@ -96,7 +100,7 @@ productoRouter.put("/productos/actualizar/:id", (req:Request,res:Response) =>{
 })
 
 productoRouter.delete("/productos/borrar/:id", (req:Request,res:Response) =>{
-    const { id } :any= req.params
+    const { id } = req.params
     const productDelete = memoria.getProductById(id)
     if(productDelete){
         res.status(200).send( memoria.deleteProduct(id,productDelete)) 

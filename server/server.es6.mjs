@@ -1,6 +1,6 @@
 import express from "express"
 import path from "path";
-import {Memoria} from "./classmemoria.mjs"
+import {Memoria} from "./classmemoria.js"
 import handlebars from "express-handlebars"
 import * as socketIo from 'socket.io'
 import fs from "fs";
@@ -33,13 +33,14 @@ app.engine(
     })
 );
 
-server.listen(port,(error) => {
+server.on("error",(error)=>{
     if (error) {
         throw Error(`Error inicando el servidor: ${error}`);
     }
+})
+server.listen(port,() => {
    console.log(`El servidor es escuchando en el port ${port}`);
 })
-
 
 productoRouter.get("/productos/listar", (req,res) => {
     const result = memoria.getProduct()
@@ -103,9 +104,6 @@ productoRouter.delete("/productos/borrar/:id", (req,res) =>{
 app.get("/",(req,res) => {
     res.sendFile(__dirname + '/public/index.html');
 })
-
-
-
 
 productoRouter.get("/productos/vista", (req,res) => {
     const arrayProducts = memoria.getProduct()
