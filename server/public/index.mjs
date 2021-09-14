@@ -1,15 +1,18 @@
-// import moment from "moment";
 const socket = io();
-const hoy = new Date()
 
-let dia= hoy.getDate();
-let mes = hoy.getMonth() + 1;
-let año = hoy.getFullYear();
-dia = ('0' + dia).slice(-2);
-mes = ('0' + mes).slice(-2);
-let hora = hoy.getHours();
-let minutos = hoy.getMinutes();
-let segundos = hoy.getSeconds();
+const Fecha = () => {
+    const hoy = new Date()
+    let dia= hoy.getDate();
+    let mes = hoy.getMonth() + 1;
+    let año = hoy.getFullYear();
+    dia = ('0' + dia).slice(-2);
+    mes = ('0' + mes).slice(-2);
+    let hora = hoy.getHours();
+    let minutos = hoy.getMinutes();
+    let segundos = hoy.getSeconds();
+    const fecha = `${dia}/${mes}/${año} ${hora}:${minutos}:${segundos}`
+    return fecha
+}
 
 const hbsTemplate = Handlebars.compile(`
 <h1 class="silver animate__animated animate__zoomIn container mt-3">Vista de Productos</h1>
@@ -69,7 +72,7 @@ const addMessage = () =>{
     if(document.getElementById("email").value.length > 0){
     const message = {
         email: document.getElementById("email").value,
-        fecha: `${dia}/${mes}/${año} ${hora}:${minutos}:${segundos}`,
+        fecha: Fecha(),
         texto: document.getElementById("texto").value,
         };
    

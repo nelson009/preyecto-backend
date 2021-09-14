@@ -1,7 +1,0 @@
-[
-	{
-		"email": "nelsonyombi@gmail.com",
-		"fecha": "10/09/2021 0:30:45",
-		"texto": "holas"
-	}
-]
