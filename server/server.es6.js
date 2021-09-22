@@ -1,7 +1,6 @@
 const express = require("express")
 const Carrito = require("./carrito");
 const { Memoria} = require("./memoria.js")
-const Archivo = require("./archivo")
 
 const  handlebars   =  require ( 'express-handlebars' )
 const http = require("http");
@@ -15,8 +14,14 @@ const ioServer = io(server);
 const carritoRouter = express.Router();
 const productoRouter = express.Router();
 const memoria = new Memoria()
-const archivo = new Archivo()
 const carrito = new Carrito()
+const knex = require("knex")({
+    client: "sqlite3",
+    connection: {
+      filename: "./DB/mensajes.sqlite",
+    },
+    useNullAsDefault: true,
+  });
 let isAdmin = true || false
 
 app.use(express.json());
@@ -55,7 +60,33 @@ ioServer.on("connection", socket => {
     socket.on("new-message", (data) => {
         messages.push(data);
         ioServer.sockets.emit("messages",messages);
-        archivo.escribirArchivo("./archivostxt/mensages.txt",messages)
+        (async () => {
+            try{
+              const tableName = "messages";
+              if(await knex.schema.hasTable(tableName)){
+                await knex.schema.dropTable(tableName);
+              }
+              await knex.schema.createTable(tableName, (table) => {
+                table.increments("id");
+                table.string("email");
+                table.string("fecha");
+                table.string("texto");
+                });
+              console.log("tabla creada");
+      
+              await knex(tableName).insert(messages);
+              console.log("mensajes insertados");
+      
+              let mensajes = await knex.from(tableName).select("*");
+              for (const mensaje of mensajes) {
+              console.log(
+              `${mensaje["id"]} ${mensaje["email"]} ${mensaje["fecha"]} ${mensaje["texto"]}`
+              );
+              }
+            }catch (error) {
+              console.log(error);
+            } 
+        })();
     })
 })
 
@@ -116,7 +147,7 @@ productoRouter.put("/actualizar/:id", (req,res) =>{
 })
 
 productoRouter.delete("/borrar/:id", (req,res) =>{
-    if(isAdmin){
+    if(!isAdmin){
         const error = {error:1,descripcion:`/carrito/listar get no autorizada`}
         res.status(200).send(error)
         return 
@@ -172,3 +203,6 @@ carritoRouter.delete("/borrar/:id", (req,res) =>{
     const error = {error:1,descripcion:`/carrito/borrar/:id delete no autorizada`}
     res.status(200).send(error)
 })
+
+
+ 

@@ -1,4 +1,3 @@
-const Archivo = require("./archivo")
 const Fecha = () => {
     const hoy = new Date()
     let dia= hoy.getDate();
@@ -12,7 +11,7 @@ const Fecha = () => {
     const fecha = `${dia}/${mes}/${año} ${hora}:${minutos}:${segundos}`
     return fecha
 }
-const archivo = new Archivo()
+
   class Memoria {
     constructor() {
         this.productos = [];
@@ -29,8 +28,39 @@ const archivo = new Archivo()
     addProduct(producto){
         this.productos.push({...producto,id:this.count+1,timestamp:Fecha()});
         this.count++
-        archivo.escribirArchivo("./archivostxt/productos.txt",this.productos)
-        return producto
+    (async () => {
+        try{
+          const tableName = "productos";
+          if(await knex.schema.hasTable(tableName)){
+            await knex.schema.dropTable(tableName);
+          }
+          await knex.schema.createTable(tableName, (table) => {
+            table.integer("id");
+            table.string("title");
+            table.float("precio");
+            table.string("thumbnail");
+            table.integer("stock");
+            table.string("codigo");
+            table.string("timestamp");
+            table.string("submit");
+            });
+          console.log("tabla creada");
+  
+          await knex(tableName).insert(this.productos);
+          console.log("productos insertados");
+  
+          let productos = await knex.from(tableName).select("*");
+          for (const producto of productos) {
+          console.log(
+            `${producto["id"]} ${producto["title"]} ${producto["precio"]} ${producto["thumbnail"]} ${producto["codigo"]} ${producto["timestamp"]} `
+          );
+          }
+        }catch (error) {
+          console.log(error);
+        } 
+    })();
+        
+      return producto
     }
     updateProduct(ProductoActualizado,id){
         const indexProducto = this.productos.findIndex(elemento => elemento.id === +id)
@@ -42,7 +72,15 @@ const archivo = new Archivo()
         return productDelete
     }
 }
-
+const knex = require("knex")({
+    client: "mysql",
+    connection: {
+      host: "127.0.0.1",
+      user: "root",
+      password: "",
+      database: "product",
+    },
+  });
 module.exports = {Memoria,Fecha}
 
 
