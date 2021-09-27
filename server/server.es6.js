@@ -1,11 +1,10 @@
 const express = require("express")
 const Carrito = require("./carrito");
 const { Memoria} = require("./memoria.js")
-
+const Archivo = require("./archivo")
 const  handlebars   =  require ( 'express-handlebars' )
 const http = require("http");
 const io = require("socket.io");
-const fs = require("fs");
 const app = express()
 const port = 8080;
 const messages= []
@@ -15,13 +14,7 @@ const carritoRouter = express.Router();
 const productoRouter = express.Router();
 const memoria = new Memoria()
 const carrito = new Carrito()
-const knex = require("knex")({
-    client: "sqlite3",
-    connection: {
-      filename: "./DB/mensajes.sqlite",
-    },
-    useNullAsDefault: true,
-  });
+const archivo = new Archivo()
 let isAdmin = true || false
 
 app.use(express.json());
@@ -60,33 +53,7 @@ ioServer.on("connection", socket => {
     socket.on("new-message", (data) => {
         messages.push(data);
         ioServer.sockets.emit("messages",messages);
-        (async () => {
-            try{
-              const tableName = "messages";
-              if(await knex.schema.hasTable(tableName)){
-                await knex.schema.dropTable(tableName);
-              }
-              await knex.schema.createTable(tableName, (table) => {
-                table.increments("id");
-                table.string("email");
-                table.string("fecha");
-                table.string("texto");
-                });
-              console.log("tabla creada");
-      
-              await knex(tableName).insert(messages);
-              console.log("mensajes insertados");
-      
-              let mensajes = await knex.from(tableName).select("*");
-              for (const mensaje of mensajes) {
-              console.log(
-              `${mensaje["id"]} ${mensaje["email"]} ${mensaje["fecha"]} ${mensaje["texto"]}`
-              );
-              }
-            }catch (error) {
-              console.log(error);
-            } 
-        })();
+        archivo.baseDatosSqlite3(messages)
     })
 })
 

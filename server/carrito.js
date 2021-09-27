@@ -13,7 +13,6 @@ class Carrito {
     addCarrito(product){
         this.carrito.push({producto:{...product},id:this.count+1,timestamp:Fecha(),})
         this.count++
-        archivo.escribirArchivo("./archivostxt/carrito.txt",this.carrito)
         return product
     }
     deleteCarrito(id){
