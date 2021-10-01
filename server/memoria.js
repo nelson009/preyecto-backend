@@ -30,19 +30,16 @@ const archivo = new Archivo()
     addProduct(producto){
         this.productos.push({...producto,id:this.count+1,timestamp:Fecha()});
         this.count++
-        archivo.addTablemysql(this.productos)
         return producto
     }
     updateProduct(ProductoActualizado,id){
         const indexProducto = this.productos.findIndex(elemento => elemento.id === +id)
         return this.productos[indexProducto] = {...ProductoActualizado, id: +id}
     }
-    deleteProduct(id,productDelete){
+    deleteProduct(id){
         const result = this.productos.filter(elemento => elemento.id !== parseInt(id) )
         this.productos = result
-
-        archivo.deletefileMysql(id)
-        return productDelete 
+        return result 
     }
 }
 module.exports = {Memoria,Fecha}

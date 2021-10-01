@@ -1,3 +1,4 @@
+
 const knex = require("knex")({
   client: "mysql",
   connection: {
@@ -8,27 +9,37 @@ const knex = require("knex")({
   },
 });
 const tableName = "productos";
-
-class Archivo {
-
-  async addTablemysql(arrayProduct){
+ class Archivo {
+  constructor(){
+ 
+}
+  async iniciarTabla (){
     try{
-      if(await knex.schema.hasTable(tableName)){
-      await knex.schema.dropTable(tableName);
+      if(!await knex.schema.hasTable(tableName)){
+        await knex.schema.createTable(tableName, (table) => {
+          table.increments("id");
+          table.string("title");
+          table.float("precio");
+          table.string("thumbnail");
+          table.integer("stock");
+          table.string("codigo");
+          table.string("timestamp");
+          table.string("submit");
+          });
+        console.log("tabla creada");
       }
-      await knex.schema.createTable(tableName, (table) => {
-        table.increments("id");
-        table.string("title");
-        table.float("precio");
-        table.string("thumbnail");
-        table.integer("stock");
-        table.string("codigo");
-        table.string("timestamp");
-        table.string("submit");
-        });
-      console.log("tabla creada");
+    }catch (error){
+      console.log(error);
+    } 
+    // finally {
+    //    knex.destroy();
+    // }
+  }
 
-      await knex(tableName).insert(arrayProduct);
+  async addTablemysql(Product){
+    try{
+      await this.iniciarTabla()
+      await knex(tableName).insert(Product);
       console.log("productos insertados");
 
       let productos = await knex.from(tableName).select("*");
@@ -46,11 +57,14 @@ class Archivo {
   }
   async deletefileMysql(id){
     try {
-    await knex.from(tableName).where("id", "=", `${id}`).del();
+      await knex.from(tableName).where("id", "=", `${id}`).del();
     console.log("producto eliminado");
     }  catch (error) {
       console.log(error);
-    }
+    } 
+    // finally {
+    //    knex.destroy();
+    // }
   }
 
   async baseDatosSqlite3(message){

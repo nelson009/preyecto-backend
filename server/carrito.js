@@ -1,7 +1,7 @@
 
 const {Fecha} = require("./memoria")
 const Archivo = require("./archivo")
-const archivo = new Archivo()
+// const archivo = new Archivo()
 class Carrito {
     constructor(){
         this.carrito = [];

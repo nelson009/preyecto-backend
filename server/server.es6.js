@@ -1,7 +1,8 @@
 const express = require("express")
 const Carrito = require("./carrito");
-const { Memoria} = require("./memoria.js")
+const { Memoria,Fecha} = require("./memoria.js")
 const Archivo = require("./archivo")
+const Mongo = require("./persistencia/monogoServer")
 const  handlebars   =  require ( 'express-handlebars' )
 const http = require("http");
 const io = require("socket.io");
@@ -15,6 +16,7 @@ const productoRouter = express.Router();
 const memoria = new Memoria()
 const carrito = new Carrito()
 const archivo = new Archivo()
+const monogo= new Mongo()
 let isAdmin = true || false
 
 app.use(express.json());
@@ -54,6 +56,7 @@ ioServer.on("connection", socket => {
         messages.push(data);
         ioServer.sockets.emit("messages",messages);
         archivo.baseDatosSqlite3(messages)
+        monogo.baseDatos(data)
     })
 })
 
@@ -89,9 +92,11 @@ productoRouter.post("/guardar", (req,res) =>{
         return
     }
     const  producto  = req.body 
-    console.log(producto.precio , producto.title , producto.thumbnail,producto.codigo,producto.stock);
+    // console.log(producto.precio , producto.title , producto.thumbnail,producto.codigo,producto.stock);
     if(producto.precio && producto.title && producto.thumbnail){
         memoria.addProduct(producto)
+        monogo.baseDatosProduct(producto)
+        archivo.addTablemysql({...producto,timestamp:Fecha()})
         const arrayProducts = memoria.getProduct()
 
         ioServer.sockets.emit('cargarProductos',arrayProducts);
@@ -120,10 +125,9 @@ productoRouter.delete("/borrar/:id", (req,res) =>{
         return 
     }
     const { id } = req.params
-    const productDelete = memoria.getProductById(id)
-    if(productDelete){
-        res.status(200).send( memoria.deleteProduct(id,productDelete)) 
-    }
+    monogo.deleteProduct(id)
+    archivo.deletefileMysql(id)
+    res.status(200).send( memoria.deleteProduct(id)) 
 })
 
 app.get("/",(req,res) => {
