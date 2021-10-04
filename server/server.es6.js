@@ -1,11 +1,12 @@
 const express = require("express")
 const Carrito = require("./carrito");
-const { Memoria,Fecha} = require("./memoria.js")
-const Archivo = require("./archivo")
-const Mongo = require("./persistencia/monogoServer")
+const { Memoria,Fecha} = require("./src/daos/memoria")
+const MysqlDao = require("./src/daos/mysqlDbDao")
+const MongoDbDao = require("./src/daos/monogoDbDao")
 const  handlebars   =  require ( 'express-handlebars' )
 const http = require("http");
 const io = require("socket.io");
+const DaoFactory = require("./src/daoFactory");
 const app = express()
 const port = 8080;
 const messages= []
@@ -15,8 +16,10 @@ const carritoRouter = express.Router();
 const productoRouter = express.Router();
 const memoria = new Memoria()
 const carrito = new Carrito()
-const archivo = new Archivo()
-const monogo= new Mongo()
+const mysqlDao = new MysqlDao()
+// const mongoDbDao= new MongoDbDao()
+const dapFactory = new DaoFactory()
+const dao = dapFactory.getDao(3)
 let isAdmin = true || false
 
 app.use(express.json());
@@ -47,7 +50,8 @@ server.listen(port,() => {
 })
 
 ioServer.on("connection", socket => {
-    const arrayProducts = memoria.getProduct()
+    // const arrayProducts = dao.readProduct()
+    const arrayProducts = memoria.readProduct()
     console.log('se conecto en el backen');
     socket.emit('cargarProductos', arrayProducts)
     socket.emit("messages", messages)
@@ -55,19 +59,21 @@ ioServer.on("connection", socket => {
     socket.on("new-message", (data) => {
         messages.push(data);
         ioServer.sockets.emit("messages",messages);
-        archivo.baseDatosSqlite3(messages)
-        monogo.baseDatos(data)
+        // mysqlDao.baseDatosSqlite3(messages)
+        dao.creatMessage(data)
     })
 })
 
-productoRouter.get("/listar", (req,res) => {
+ productoRouter.get("/listar", (req,res) => {
     if(isAdmin){
-        const result = memoria.getProduct()
-        if(result.length > 0){
+        const listar = dao.readProduct()
+        console.log("listar server",listar);
+       
+        // if(result.length > 0){
             // res.status(200).send(JSON.stringify(result))
-            res.status(200).send(result)
+            res.status(200).send(listar)
             return
-        }
+        // }
     }
     res.status(404).send({error:"no hay productos cargados"})
     
@@ -92,13 +98,11 @@ productoRouter.post("/guardar", (req,res) =>{
         return
     }
     const  producto  = req.body 
-    // console.log(producto.precio , producto.title , producto.thumbnail,producto.codigo,producto.stock);
+    console.log(producto.precio , producto.title , producto.thumbnail,producto.codigo,producto.stock);
     if(producto.precio && producto.title && producto.thumbnail){
-        memoria.addProduct(producto)
-        monogo.baseDatosProduct(producto)
-        archivo.addTablemysql({...producto,timestamp:Fecha()})
-        const arrayProducts = memoria.getProduct()
-
+        dao.creatProduct({...producto,timestamp:Fecha()})
+        const arrayProducts = memoria.readProduct()
+        // const arrayProducts = dao.readProduct()
         ioServer.sockets.emit('cargarProductos',arrayProducts);
         res.redirect('/')
     }
@@ -112,9 +116,8 @@ productoRouter.put("/actualizar/:id", (req,res) =>{
     }
     const { id } = req.params
     const ProductoActualizado = req.body
-    const productoExistente = memoria.getProductById(id)
-    if(ProductoActualizado.title&&ProductoActualizado.precio&&ProductoActualizado.thumbnail&&productoExistente){
-        res.status(200).send(memoria.updateProduct((ProductoActualizado),id))
+    if(ProductoActualizado.title&&ProductoActualizado.precio&&ProductoActualizado.thumbnail){
+        res.status(200).send(dao.update((ProductoActualizado),id))
     }
 })
 
@@ -125,9 +128,7 @@ productoRouter.delete("/borrar/:id", (req,res) =>{
         return 
     }
     const { id } = req.params
-    monogo.deleteProduct(id)
-    archivo.deletefileMysql(id)
-    res.status(200).send( memoria.deleteProduct(id)) 
+    res.status(200).send( dao.delete(id)) 
 })
 
 app.get("/",(req,res) => {
@@ -135,7 +136,7 @@ app.get("/",(req,res) => {
 })
 
 productoRouter.get("/vista", (req,res) => {
-    const arrayProducts = memoria.getProduct()
+    const arrayProducts = memoria.readProduct()
     let bolean=
     arrayProducts.length > 0? true : false
     res.render("main.hbs", {

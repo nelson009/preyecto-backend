@@ -9,10 +9,24 @@ const knex = require("knex")({
   },
 });
 const tableName = "productos";
- class Archivo {
+ class MysqlDao {
   constructor(){
  
 }
+  async readProduct(){
+    
+    try{
+      let productos = await knex.from(tableName).select("*");
+      for (const producto of productos) {
+      console.log(
+        `${producto["id"]} ${producto["title"]} ${producto["precio"]} ${producto["thumbnail"]} ${producto["codigo"]} ${producto["timestamp"]} `
+        );
+      }
+    }catch (error) {
+      console.log(error);
+    } 
+    return productos
+  }
   async iniciarTabla (){
     try{
       if(!await knex.schema.hasTable(tableName)){
@@ -36,18 +50,12 @@ const tableName = "productos";
     // }
   }
 
-  async addTablemysql(Product){
+  async creatProduct(Product){
     try{
       await this.iniciarTabla()
       await knex(tableName).insert(Product);
       console.log("productos insertados");
-
-      let productos = await knex.from(tableName).select("*");
-      for (const producto of productos) {
-      console.log(
-        `${producto["id"]} ${producto["title"]} ${producto["precio"]} ${producto["thumbnail"]} ${producto["codigo"]} ${producto["timestamp"]} `
-        );
-      }
+    
     }catch (error) {
         console.log(error);
     } 
@@ -55,7 +63,7 @@ const tableName = "productos";
     //   knex.destroy();
     // }
   }
-  async deletefileMysql(id){
+  async delete(id){
     try {
       await knex.from(tableName).where("id", "=", `${id}`).del();
     console.log("producto eliminado");
@@ -66,8 +74,22 @@ const tableName = "productos";
     //    knex.destroy();
     // }
   }
-
-  async baseDatosSqlite3(message){
+  async update (producto,id) {
+    try {
+      
+      await knex.from(tableName).where("id", "=", `${id}`)
+      .update( "precio",3000,)
+      .update("title",`${ producto.title}`)
+      .update( "precio",`${ producto.precio}`,)
+      .update( "thumbnail",`${ producto.thumbnail}`,)
+      .update( "codigo",`${ producto.codigo}`,)
+      .update( "stock",`${ producto.stock}`,)
+      console.log("producto actualizado");
+    }catch (error) {
+      console.log(error);
+    } 
+  }
+  async creatMessage(message){
       const knex = require("knex")({
       client: "sqlite3",
       connection: {
@@ -103,4 +125,4 @@ const tableName = "productos";
   }
 }
 
-module.exports = Archivo
+module.exports = MysqlDao

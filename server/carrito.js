@@ -1,6 +1,6 @@
 
-const {Fecha} = require("./memoria")
-const Archivo = require("./archivo")
+const {Fecha} = require("./src/daos/memoria")
+// const Archivo = require("./src/daos/archivo")
 // const archivo = new Archivo()
 class Carrito {
     constructor(){

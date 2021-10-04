@@ -37,6 +37,10 @@ const productSchema = new mongoose.Schema({
         type: Number,
         require: true,
     },
+    timestamp:{
+        type: String,
+        require: true,
+    },
 });
 
 module.exports = {
