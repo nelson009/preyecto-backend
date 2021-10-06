@@ -15,17 +15,18 @@ const ioServer = io(server);
 const carritoRouter = express.Router();
 const productoRouter = express.Router();
 const memoria = new Memoria()
-// const carrito = new Carrito()
-// const mysqlDao = new MysqlDao()
+const carrito = new Carrito()
+const mysqlDao = new MysqlDao()
 // const mongoDbDao= new MongoDbDao()
 const MEMORIA = 0;
 const MYSQL = 1;
 const MONGODB = 2;
 const MONGODBAASDOO = 3;
 const FIREBASEDAO = 4;
-const OPTION = FIREBASEDAO
+const SQLITE3DAO = 5;
+const OPTION = MYSQL
 const dapFactory = new DaoFactory()
-const dao = dapFactory.getDao(FIREBASEDAO)
+const dao = dapFactory.getDao(OPTION)
 let isAdmin = true || false
 
 app.use(express.json());
@@ -56,19 +57,27 @@ server.listen(port,() => {
 })
 
  ioServer.on("connection", async (socket) => {
-    // const arrayProducts = await dao.readProduct()
     // const arrayProducts = memoria.readProduct()
     console.log('se conecto en el backen');
     socket.emit('cargarProductos', await dao.readProduct())
     socket.emit("messages", messages)
+    //filtros
+    socket.emit('lista', await dao.filtroNombre())
+    socket.emit('rango', await dao.filtroPrecio())
 
     socket.on("new-message", (data) => {
         messages.push(data);
         ioServer.sockets.emit("messages",messages);
-        // mysqlDao.baseDatosSqlite3(messages)
-        // dao.creatMessage(messages)
         dao.creatMessage(data)
     })
+    //filtros
+    socket.on("Name", async (data) => {
+        ioServer.sockets.emit("lista",await dao.filtroNombre(data))
+    })
+    socket.on("precio", async (data) => {
+        ioServer.sockets.emit("rango",await dao.filtroPrecio(data))
+    })
+
 })
 
  productoRouter.get("/listar",async (req,res) => {
@@ -105,9 +114,6 @@ productoRouter.post("/guardar", async(req,res) =>{
     console.log(producto.precio , producto.title , producto.thumbnail,producto.codigo,producto.stock);
     // if(producto.precio && producto.title && producto.thumbnail){
         dao.creatProduct({...producto,timestamp:Fecha()})
-     
-        // const arrayProducts = await dao.readProduct()
-        // console.log("lista productos", arrayProducts);
         ioServer.sockets.emit('cargarProductos',await dao.readProduct());
         res.redirect('/')
     // }

@@ -4,8 +4,7 @@ const { Memoria } = require("./daos/memoria");
 const MongoDBaaSDao = require("./daos/MongoDBaaSDao");
 const MongoDbDao = require("./daos/monogoDbDao");
 const MysqlDao = require("./daos/mysqlDbDao");
-
-
+const Sqlite3Dao = require("./daos/sqlite3");
 
 class DaoFactory {
     constructor(){
@@ -22,8 +21,9 @@ class DaoFactory {
                 return new MongoDBaaSDao();
             case 4:
                 return new FireBaseDao()
+            case 5:
+                return new Sqlite3Dao()
         }
     }
 }
-
 module.exports = DaoFactory

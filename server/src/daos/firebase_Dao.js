@@ -47,11 +47,12 @@ class FireBaseDao {
     async update(producto,id){
         console.log("UPDATE");
         try{let doc = await collection.doc(id)
-        .update({title: `${ producto.title}`})
-        .update({precio: `${ producto.precio}`})
-        .update({thumbnail: `${ producto.thumbnail}`})
-        .update({codigo: `${ producto.codigo}`})
-        .update({stock: `${ producto.stock}`})
+        .update(
+            {title: producto.title,
+             precio: producto.precio, 
+             thumbnail: producto.thumbnail, 
+             codigo: producto.codigo, 
+             stock: producto.stock})
         console.log(doc)
         }catch (error) {
             console.log(error);
@@ -60,7 +61,7 @@ class FireBaseDao {
     }
     async delete(id){
         console.log("DELETE");
-        doc = await collection.doc(`${id}`).delete();
+        let doc = await collection.doc(`${id}`).delete();
         console.log(doc);
         return doc 
     }

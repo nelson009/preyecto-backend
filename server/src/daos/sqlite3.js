@@ -1,32 +1,16 @@
-const tableName = "productos";
-const knex = require("knex")({
-  client: "mysql",
-  connection: {
-    host: "127.0.0.1",
-    user: "root",
-    password: "",
-    database: "product",
-  },
-});
 
- class MysqlDao {
+const knex = require("knex")({
+    client: "sqlite3",
+    connection: {
+    filename: "./DB/ecommerce.sqlite",
+    },
+    useNullAsDefault: true,
+});
+const tableName = "productos";
+ class Sqlite3Dao {
   constructor(){
     this.productos=[]
-    this.filtroName=[]
-    this.precio=[]
 }
-  async filtroNombre(nombre){
-    if(nombre){ 
-      this.filtroName = await knex.from(tableName).where("title", "=", nombre).select("*");
-    }
-    return  this.filtroName
-  }
-  async filtroPrecio(precio){
-    if(precio){
-      this.precio = await knex.from(tableName).where("precio", ">", precio).select("*");
-    }
-    return this.precio
-  }
   async readProduct(){
     try{
       await this.iniciarTabla()
@@ -137,4 +121,4 @@ const knex = require("knex")({
   }
 }
 
-module.exports = MysqlDao
+module.exports = Sqlite3Dao
