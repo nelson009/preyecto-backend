@@ -1,4 +1,7 @@
+
+const FireBaseDao = require("./daos/firebase_Dao");
 const { Memoria } = require("./daos/memoria");
+const MongoDBaaSDao = require("./daos/MongoDBaaSDao");
 const MongoDbDao = require("./daos/monogoDbDao");
 const MysqlDao = require("./daos/mysqlDbDao");
 
@@ -9,12 +12,16 @@ class DaoFactory {
     }
     getDao(number){
         switch(number){
-            case 1:
+            case 0:
                 return new Memoria();
-            case 2:
+            case 1:
                 return new MysqlDao();
-            case 3:
+            case 2:
                 return new MongoDbDao();
+            case 3:
+                return new MongoDBaaSDao();
+            case 4:
+                return new FireBaseDao()
         }
     }
 }

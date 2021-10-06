@@ -1,5 +1,5 @@
 // const Archivo = require("./mysqlDbDao")
-
+const fs = require("fs");
 const Fecha = () => {
     const hoy = new Date()
     let dia= hoy.getDate();
@@ -40,6 +40,15 @@ const Fecha = () => {
         const result = this.productos.filter(elemento => elemento.id !== parseInt(id) )
         this.productos = result
         return result 
+    }
+    creatMessage(datos){
+        fs.writeFile("./archivostxt/mensajes.txt",JSON.stringify(datos,null,"\t"), (error) => {
+            if (error) {
+              console.log(`Hubo un error:\n    ${error.message}`);
+            } else {
+              console.log("Archivo grabado!");
+            }
+        });
     }
 }
 module.exports = {Memoria,Fecha}

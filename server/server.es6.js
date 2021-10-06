@@ -15,11 +15,17 @@ const ioServer = io(server);
 const carritoRouter = express.Router();
 const productoRouter = express.Router();
 const memoria = new Memoria()
-const carrito = new Carrito()
-const mysqlDao = new MysqlDao()
+// const carrito = new Carrito()
+// const mysqlDao = new MysqlDao()
 // const mongoDbDao= new MongoDbDao()
+const MEMORIA = 0;
+const MYSQL = 1;
+const MONGODB = 2;
+const MONGODBAASDOO = 3;
+const FIREBASEDAO = 4;
+const OPTION = FIREBASEDAO
 const dapFactory = new DaoFactory()
-const dao = dapFactory.getDao(3)
+const dao = dapFactory.getDao(FIREBASEDAO)
 let isAdmin = true || false
 
 app.use(express.json());
@@ -49,31 +55,29 @@ server.listen(port,() => {
    console.log(`El servidor es escuchando en el port ${port}`);
 })
 
-ioServer.on("connection", socket => {
-    // const arrayProducts = dao.readProduct()
-    const arrayProducts = memoria.readProduct()
+ ioServer.on("connection", async (socket) => {
+    // const arrayProducts = await dao.readProduct()
+    // const arrayProducts = memoria.readProduct()
     console.log('se conecto en el backen');
-    socket.emit('cargarProductos', arrayProducts)
+    socket.emit('cargarProductos', await dao.readProduct())
     socket.emit("messages", messages)
 
     socket.on("new-message", (data) => {
         messages.push(data);
         ioServer.sockets.emit("messages",messages);
         // mysqlDao.baseDatosSqlite3(messages)
+        // dao.creatMessage(messages)
         dao.creatMessage(data)
     })
 })
 
- productoRouter.get("/listar", (req,res) => {
+ productoRouter.get("/listar",async (req,res) => {
     if(isAdmin){
-        const listar = dao.readProduct()
-        console.log("listar server",listar);
-       
-        // if(result.length > 0){
+        const listar = await dao.readProduct()
+        // const result = memoria.readProduct()
             // res.status(200).send(JSON.stringify(result))
-            res.status(200).send(listar)
-            return
-        // }
+        res.status(200).send(listar)
+        return
     }
     res.status(404).send({error:"no hay productos cargados"})
     
@@ -91,7 +95,7 @@ productoRouter.get("/listar/:id", (req,res) => {
     res.status(404).send({error:"producto no encontrado"})
 })
 
-productoRouter.post("/guardar", (req,res) =>{
+productoRouter.post("/guardar", async(req,res) =>{
     if(!isAdmin){
         const error = {error:1,descripcion:`/carrito/agregar post no autorizada`}
         res.status(200).send(error)
@@ -99,13 +103,14 @@ productoRouter.post("/guardar", (req,res) =>{
     }
     const  producto  = req.body 
     console.log(producto.precio , producto.title , producto.thumbnail,producto.codigo,producto.stock);
-    if(producto.precio && producto.title && producto.thumbnail){
+    // if(producto.precio && producto.title && producto.thumbnail){
         dao.creatProduct({...producto,timestamp:Fecha()})
-        const arrayProducts = memoria.readProduct()
-        // const arrayProducts = dao.readProduct()
-        ioServer.sockets.emit('cargarProductos',arrayProducts);
+     
+        // const arrayProducts = await dao.readProduct()
+        // console.log("lista productos", arrayProducts);
+        ioServer.sockets.emit('cargarProductos',await dao.readProduct());
         res.redirect('/')
-    }
+    // }
 })
 
 productoRouter.put("/actualizar/:id", (req,res) =>{

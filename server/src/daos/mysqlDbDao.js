@@ -11,21 +11,29 @@ const knex = require("knex")({
 const tableName = "productos";
  class MysqlDao {
   constructor(){
+    this.productos=[]
  
 }
   async readProduct(){
     
     try{
-      let productos = await knex.from(tableName).select("*");
-      for (const producto of productos) {
-      console.log(
-        `${producto["id"]} ${producto["title"]} ${producto["precio"]} ${producto["thumbnail"]} ${producto["codigo"]} ${producto["timestamp"]} `
-        );
-      }
+      await this.iniciarTabla()
+      const result = await knex(tableName).select("*");
+      this.productos = result
+    //   // for (const producto of productos) {
+    //   // console.log(
+    //   //   `${producto["id"]} ${producto["title"]} ${producto["precio"]} ${producto["thumbnail"]} ${producto["codigo"]} ${producto["timestamp"]} `
+    //   //   );
+    //   // }
     }catch (error) {
       console.log(error);
     } 
-    return productos
+           
+    // // return this.productos
+    // await this.iniciarTabla()
+    // this.productos = await knex.from(tableName).select("*")
+    // // console.log("result",result)
+    return this.productos
   }
   async iniciarTabla (){
     try{
@@ -78,7 +86,6 @@ const tableName = "productos";
     try {
       
       await knex.from(tableName).where("id", "=", `${id}`)
-      .update( "precio",3000,)
       .update("title",`${ producto.title}`)
       .update( "precio",`${ producto.precio}`,)
       .update( "thumbnail",`${ producto.thumbnail}`,)
@@ -111,7 +118,7 @@ const tableName = "productos";
         console.log("tabla creada");
 
         await knex(tableName).insert(message);
-        console.log("mensajes insertados");
+        console.log("mensajes insertados sqlite3");
 
         let mensajes = await knex.from(tableName).select("*");
         for (const mensaje of mensajes) {

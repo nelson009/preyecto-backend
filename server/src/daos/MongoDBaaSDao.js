@@ -1,14 +1,14 @@
 const mongoose = require("mongoose");
 const {mensajes,productos} = require("./mongoSchema");
 // let result
-class MongoDbDao {
+class MongoDBaaSDao {
     constructor(){
        this.productos = []
     //    this.read()
     }
 
     creatProduct(producto){
-        mongoose.connect("mongodb://localhost:27017/ecommerce", () => {
+        mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority", () => {
             console.log("base de datos conectada");
             productos.insertMany(producto,(error, docs) => {
                 if (error) {
@@ -25,7 +25,7 @@ class MongoDbDao {
     }
     
     creatMessage(message){
-        mongoose.connect("mongodb://localhost:27017/ecommerce", () => {
+        mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority", () => {
             console.log("base de datos conectada");
             mensajes.insertMany(message,(error, docs) => {
                 if (error) {
@@ -40,7 +40,7 @@ class MongoDbDao {
     }
     async readProduct(){
         try {
-            await mongoose.connect("mongodb://localhost:27017/ecommerce");
+            await mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority");
             console.log("Base de datos conectada");
             const result = await productos.find({}) 
             this.productos = result
@@ -56,7 +56,7 @@ class MongoDbDao {
   
     async delete(id){
         try {
-            await mongoose.connect("mongodb://localhost:27017/ecommerce");
+            await mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority");
             console.log("Base de datos conectada");
             console.log(
                 "producto borrado",
@@ -71,7 +71,7 @@ class MongoDbDao {
     }
     async update (producto,id) {
         try{
-            await mongoose.connect("mongodb://localhost:27017/ecommerce");
+            await mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority");
             console.log("Base de datos conectada");
             console.log(
                 "producto actualizado",
@@ -93,4 +93,4 @@ class MongoDbDao {
     }
 }
 
-module.exports = MongoDbDao
+module.exports = MongoDBaaSDao
