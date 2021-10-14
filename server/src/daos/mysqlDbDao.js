@@ -1,53 +1,71 @@
-const tableName = "productos";
-const knex = require("knex")({
-  client: "mysql",
-  connection: {
-    host: "127.0.0.1",
-    user: "root",
-    password: "",
-    database: "product",
-  },
-});
 
  class MysqlDao {
   constructor(){
     this.productos=[]
     this.filtroName=[]
     this.precio=[]
+    this.codigo = []
+    this.stock=[]
+    this.tableName="productos"
+    this.messageTable= "messages"
 }
+ 
   async filtroNombre(nombre){
     if(nombre){ 
-      this.filtroName = await knex.from(tableName).where("title", "=", nombre).select("*");
+      const knex = require("knex")({client: "mysql",connection: {host: "127.0.0.1",user: "root",password: "",database: "product",},});
+      this.filtroName = await knex.from(this.tableName).where("title", "=", nombre).select("*");
     }
+
     return  this.filtroName
   }
-  async filtroPrecio(precio){
-    if(precio){
-      this.precio = await knex.from(tableName).where("precio", ">", precio).select("*");
+
+  async filtroPrecio(object){
+    if(object){
+      const knex = require("knex")({client: "mysql",connection: {host: "127.0.0.1",user: "root",password: "",database: "product",},});
+      this.precio = await knex.from(this.tableName).where("precio", object.operador, object.precio).select("*");
     }
+
     return this.precio
   }
+
+  async filtroCodigo(codigo){
+    if(codigo){
+      const knex = require("knex")({client: "mysql",connection: {host: "127.0.0.1",user: "root",password: "",database: "product",},});
+      this.codigo= await knex.from(this.tableName).where("codigo", "=", codigo).select("*"); 
+    }
+
+    return   this.codigo
+  }
+
+  async filterStock(object){
+    if(object){
+    const knex = require("knex")({client: "mysql",connection: {host: "127.0.0.1",user: "root",password: "",database: "product",},});
+    this.stock = await knex.from( this.tableName).where("stock", object.operador, object.stock).select("*");
+    }
+
+    return this.stock
+  }
+
   async readProduct(){
+    const knex = require("knex")({client: "mysql",connection: {host: "127.0.0.1",user: "root",password: "",database: "product",},});
     try{
       await this.iniciarTabla()
-      this.productos = await knex(tableName).select("*");
-      for (const producto of this.productos) {
-      console.log(
-        `${producto["id"]} ${producto["title"]} ${producto["precio"]} ${producto["thumbnail"]} ${producto["codigo"]} ${producto["timestamp"]} `
-        );
-      }
+      this.productos = await knex( this.tableName).select("*");
     }catch (error) {
       console.log(error);
     }
-    // finally {
-    //   knex.destroy();
-    // }
+    finally {
+      knex.destroy();
+    }
+
     return this.productos
   }
+
   async iniciarTabla (){
+    const knex = require("knex")({client: "mysql",connection: {host: "127.0.0.1",user: "root",password: "",database: "product",},});
     try{
-      if(!await knex.schema.hasTable(tableName)){
-        await knex.schema.createTable(tableName, (table) => {
+      if(!await knex.schema.hasTable(this.tableName)){
+        await knex.schema.createTable(this.tableName, (table) => {
           table.increments("id");
           table.string("title");
           table.float("precio");
@@ -56,42 +74,47 @@ const knex = require("knex")({
           table.string("codigo");
           table.string("timestamp");
           table.string("submit");
+          table.string("descripcion")
           });
         console.log("tabla creada");
       }
     }catch (error){
       console.log(error);
     } 
-    // finally {
-    //    knex.destroy();
-    // }
+    finally {
+       knex.destroy();
+    }
   }
 
   async creatProduct(Product){
+    const knex = require("knex")({client: "mysql",connection: {host: "127.0.0.1",user: "root",password: "",database: "product",},});
     try{
       await this.iniciarTabla()
-      await knex(tableName).insert(Product);
+      await knex(this.tableName).insert(Product);
       console.log("productos insertados");
-    
     }catch (error) {
-        console.log(error);
+      console.log(error);
     } 
-    // finally {
-    //   knex.destroy();
-    // }
+    finally {
+      knex.destroy();
+    }
   }
+
   async delete(id){
+    const knex = require("knex")({client: "mysql",connection: {host: "127.0.0.1",user: "root",password: "",database: "product",},});
     try {
       await knex.from(tableName).where("id", "=", `${id}`).del();
-    console.log("producto eliminado");
+      console.log("producto eliminado");
     }  catch (error) {
       console.log(error);
     } 
-    // finally {
-    //    knex.destroy();
-    // }
-  }
+    finally {
+       knex.destroy();
+    }
+  } 
+
   async update (producto,id) {
+    const knex = require("knex")({client: "mysql",connection: {host: "127.0.0.1",user: "root",password: "",database: "product",},});
     try {
       await knex.from(tableName).where("id", "=", `${id}`)
       .update("title",`${ producto.title}`)
@@ -102,29 +125,27 @@ const knex = require("knex")({
       console.log("producto actualizado");
     }catch (error) {
       console.log(error);
-    } 
+    }finally {
+      knex.destroy();
+    }
   }
+
   async creatMessage(message){
+    const knex = require("knex")({client: "mysql",connection: {host: "127.0.0.1",user: "root",password: "",database: "product",},});
     try{
-      const tableName = "messages";
       await this.creatTableMessage()
-      await knex(tableName).insert(message);
+      await knex(this.messageTable).insert(message);
       console.log("mensajes insertados ");
-  
-      let mensajes = await knex.from(tableName).select("*");
-      for (const mensaje of mensajes) {
-        console.log(
-        `${mensaje["id"]} ${mensaje["email"]} ${mensaje["fecha"]} ${mensaje["texto"]}`
-        );
-      }
     }catch (error) {
       console.log(error);
     } 
-    // finally {
-    //   knex.destroy();
-    // }
+    finally {
+      knex.destroy();
+    }
   }
+
   async creatTableMessage(){
+    const knex = require("knex")({client: "mysql",connection: {host: "127.0.0.1",user: "root",password: "",database: "product",},});
     if(!await knex.schema.hasTable("messages")){
       await knex.schema.createTable("messages", (table) => {
         table.increments("id");
@@ -134,6 +155,12 @@ const knex = require("knex")({
         });
       console.log("tabla creada");
     }
+  }
+
+  leerMensages(){
+    console.log("leyendo mensajes de memoria", this.mensaje)
+    
+    return this.mensaje
   }
 }
 

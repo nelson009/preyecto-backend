@@ -23,6 +23,8 @@ class DaoFactory {
                 return new FireBaseDao()
             case 5:
                 return new Sqlite3Dao()
+            default:
+                return new Memoria()
         }
     }
 }

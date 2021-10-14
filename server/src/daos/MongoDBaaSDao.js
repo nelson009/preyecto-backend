@@ -1,10 +1,78 @@
 const mongoose = require("mongoose");
 const {mensajes,productos} = require("./mongoSchema");
-// let result
 class MongoDBaaSDao {
     constructor(){
        this.productos = []
-    //    this.read()
+       this.filtroName=[]
+       this.codigo = []
+       this.stock=[]
+       this.precio=[]
+    }
+    async filtroNombre(nombre){
+        if(nombre){
+            try{
+                await mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority");
+                this.filtroName  = await productos.find({ title : nombre})
+            }catch (error) {
+                console.log(error)
+            } finally {
+                await mongoose.disconnect();
+                console.log("Base de datos desconectada");
+            }
+        }
+
+        return  this.filtroName
+      }
+
+      async filtroPrecio(object){
+        
+        if(object){
+            await mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority");
+            if((object.operador) == "="){
+                console.log(object.precio, object.operador)
+                this.precio =  await productos.find({ precio: +object.precio})
+            }if(object.operador == ">"){
+                this.precio =  await productos.find({ precio: { $gt: +object.precio }})
+            }if(object.operador == '<'){
+                this.precio =  await productos.find({ precio: { $lt: +object.precio }})
+            }
+        }
+       
+        return this.precio
+    }
+    
+    async filtroCodigo(codigo){
+        if(codigo){
+            try{
+                await mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority");
+                this.codigo  = await productos.find({ codigo : codigo})
+            }catch (error) {
+                console.log(error)
+            } finally {
+                await mongoose.disconnect();
+                console.log("Base de datos desconectada");
+            }
+        }
+
+        return this.codigo
+    }
+
+   
+    async filterStock(object){
+        if(object){
+            await mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority");
+            if((object.operador) == '='){
+                console.log(object.stock, object.operador)
+                this.stock =  await productos.find({ stock: +object.stock})
+            }if(object.operador == '>'){
+                this.stock =  await productos.find({ stock: { $gt: +object.stock }})
+            }if(object.operador == '<'){
+                this.stock =  await productos.find({ stock: { $lt: +object.stock }})
+            }
+            console.log(object)
+        }
+
+        return this.stock
     }
 
     creatProduct(producto){
@@ -15,7 +83,6 @@ class MongoDBaaSDao {
                     console.log(error);
                 }
                 console.log(docs);
-                // this.productos.push(producto)
                 mongoose.disconnect(() => {
                 console.log("Base de datos desconectada");
                 })
@@ -38,19 +105,21 @@ class MongoDBaaSDao {
             })
         })
     }
+
+    leerMensages(){
+        console.log("leyendo mensajes de memoria", this.mensaje)
+        
+        return this.mensaje
+      }
+      
     async readProduct(){
         try {
             await mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority");
             console.log("Base de datos conectada");
-            const result = await productos.find({}) 
-            this.productos = result
+            this.productos = await productos.find({}) 
          } catch (error) {
             console.log(error);
          }
-        // finally {
-        //     await mongoose.disconnect();
-        //     console.log("Base de datos desconectada");
-        // } 
         return this.productos
     }
   
@@ -67,7 +136,7 @@ class MongoDBaaSDao {
         } finally {
             await mongoose.disconnect();
             console.log("Base de datos desconectada");
-          }
+        }
     }
     async update (producto,id) {
         try{

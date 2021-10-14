@@ -1,0 +1,22 @@
+[
+	{
+		"title": "subida fire2",
+		"precio": 0,
+		"thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyOAEjgVXBwJZ-XAcJVPQrNEcwcPT35tcdfw&usqp=CAU",
+		"codigo": "1",
+		"stock": 0,
+		"descripcion": "1",
+		"timestamp": "11/10/2021 20:41:12",
+		"id": 1
+	},
+	{
+		"title": "subida fire2",
+		"precio": 0,
+		"thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyOAEjgVXBwJZ-XAcJVPQrNEcwcPT35tcdfw&usqp=CAU",
+		"codigo": "1",
+		"stock": 0,
+		"descripcion": "1",
+		"timestamp": "11/10/2021 20:41:13",
+		"id": 2
+	}
+]

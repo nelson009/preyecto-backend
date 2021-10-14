@@ -1,11 +1,12 @@
 
+const FsDao = require("./src/daos/fsDao");
 const {Fecha} = require("./src/daos/memoria")
-// const Archivo = require("./src/daos/archivo")
-// const archivo = new Archivo()
+const fsDao = new FsDao()
 class Carrito {
     constructor(){
         this.carrito = [];
         this.count = 0
+        this.fileName = "./archivostxt/carrito.txt"
     }
     getCarrito(){
         return this.carrito
@@ -13,6 +14,7 @@ class Carrito {
     addCarrito(product){
         this.carrito.push({producto:{...product},id:this.count+1,timestamp:Fecha(),})
         this.count++
+        fsDao.escribirArchivo(this.fileName ,this.carrito)
         return product
     }
     deleteCarrito(id){

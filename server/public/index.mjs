@@ -56,57 +56,68 @@ const clearInput = () =>{
 
 socket.on("messages", (data) =>{
     console.log(data)
-    document.getElementById("messages").innerHTML = data.map(
-    ({email,texto,fecha}) => 
-    `
-    <div class="mb-3">
-    <strong class="email-color">${email}</strong>
-    <span class="fecha-color">[${fecha}]:</span>
-    <em class="text-color">${texto}</em>
-    </div>
-    `
-    ).join(" ");
-    clearInput();
+    // document.getElementById("messages").innerHTML = data.map(
+    // ({email,texto,fecha}) => 
+    // `
+    // <div class="mb-3">
+    // <strong class="email-color">${email}</strong>
+    // <span class="fecha-color">[${fecha}]:</span>
+    // <em class="text-color">${texto}</em>
+    // </div>
+    // `
+    // ).join(" ");
+    // clearInput();
 })
 
 const addMessage = () =>{
     if(document.getElementById("email").value.length > 0){
     const message = {
-        email: document.getElementById("email").value,
-        fecha: Fecha(),
+        author: {
+            email: document.getElementById("email").value,
+            fecha: Fecha(),
+            nombre: document.getElementById("messageNombre").value,
+            apellido: document.getElementById("messageApellido").value,
+            edad: document.getElementById("messageEdad").value,
+            alias: document.getElementById("messaAlias").value,
+        },
         texto: document.getElementById("texto").value,
-        };
-   
+    }
     socket.emit("new-message", message);
     }
     return false
 }
-//filtro por nombre
-socket.on("lista", (data) =>{
-    console.log(data)
-    document.getElementById("filtroNombre").innerHTML = data.map(
+
+//Filtros
+const creatTable = (divHtml,data)=>{
+    document.getElementById(divHtml).innerHTML = data.map(
     ({title,precio,codigo,stock,}) => 
     `
     <table border="1" class="table table-dark table-hover">
-    <thead>
-        <tr class="thead-light">
-            <th scope="col">Nombre</th>
-            <th scope="col">Precio</th>
-            <th scope="col">codigo</th>
-            <th scope="col">stock</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>${title}</td>
-            <td>${precio}</td>
-            <td>${codigo}</td>
-            <td>${stock}</td>
-        </tr>
-    </tbody>
-</table>
+        <thead>
+            <tr class="thead-light">
+                <th scope="col">Nombre</th>
+                <th scope="col">Precio</th>
+                <th scope="col">codigo</th>
+                <th scope="col">stock</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>${title}</td>
+                <td>${precio}</td>
+                <td>${codigo}</td>
+                <td>${stock}</td>
+            </tr>
+        </tbody>
+    </table>
     `
     ).join(" ");
+}
+
+//filtro por nombre
+socket.on("lista", (data) =>{
+    console.log(data)
+    creatTable("filtroNombre",data)
 })
 
 const filtroNombre = () =>{
@@ -115,34 +126,50 @@ const filtroNombre = () =>{
 }
 
 //filtro por precio
+// socket.on("rango", (data) =>{
+//     console.log(data)
+//     creatTable("Precio",data)
+// })
+// const filtroPrecio = () =>{
+//     socket.emit("precio",document.getElementById("Price").value)
+//     return false
+// }
+
+//filtro por precio
 socket.on("rango", (data) =>{
     console.log(data)
-    document.getElementById("Precio").innerHTML = data.map(
-    ({title,precio,codigo,stock,}) => 
-    `
-    <table border="1" class="table table-dark table-hover">
-    <thead>
-        <tr class="thead-light">
-            <th scope="col">Nombre</th>
-            <th scope="col">Precio</th>
-            <th scope="col">codigo</th>
-            <th scope="col">stock</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>${title}</td>
-            <td>${precio}</td>
-            <td>${codigo}</td>
-            <td>${stock}</td>
-        </tr>
-    </tbody>
-</table>
-    `
-    ).join(" ");
+    creatTable("Precio",data)
 })
 const filtroPrecio = () =>{
-    socket.emit("precio",document.getElementById("precio").value)
+    const precioOperador = {
+        precio: document.getElementById("Price").value,
+        operador: document.getElementById("operadorPrecio").value,
+    }
+    socket.emit("precio", precioOperador)
     return false
 }
 
+
+//FILTRO POR CODIGO
+socket.on("code", (data) =>{
+    console.log(data)
+    creatTable("codigoTabla",data)
+})
+const filtroCode = () =>{
+    socket.emit("inputCode",document.getElementById("Codigo").value)
+    return false
+}
+
+//FILTRO STOCK
+socket.on("listaStock", (data) =>{
+    console.log(data)
+    creatTable("stockTable",data)
+})
+const filtroStock = () =>{
+    const stockOperador = {
+        stock: document.getElementById("Stock").value,
+        operador: document.getElementById("operadorStock").value,
+    }
+    socket.emit("Stock", stockOperador)
+    return false
+}

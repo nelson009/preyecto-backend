@@ -41,6 +41,10 @@ const productSchema = new mongoose.Schema({
         type: String,
         require: true,
     },
+    descripcion:{
+        type: String,
+        require: true,
+    }
 });
 
 module.exports = {
