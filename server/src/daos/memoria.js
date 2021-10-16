@@ -27,6 +27,7 @@ class Memoria {
     this.stock=[]
     this.filename= "./archivostxt/mensajes.txt" 
     this.mensaje = []
+    this.messageId=0
   }
 
   filtroNombre(nombre){
@@ -111,37 +112,44 @@ class Memoria {
   }
 
   leerMensages(){
-  console.log('-------------- NORMALIZADO --------------')
-  const user = new  normalizr.schema.Entity('users',{},{idAttribute: 'email'});
-
-  const schemaAuthor = new normalizr.schema.Entity('schemaAuthors',{
-    author: user,
-  });
-
-  const mensages = new normalizr.schema.Entity('mensages',{
-    message: [schemaAuthor],
-  });
-
-  const normalizedMessage = normalizr.normalize({id: '9999',message:[...this.mensaje]} ,mensages);
-  console.log(util.inspect(normalizedMessage, false, 12, true));
-  const normalizedLength = JSON.stringify(normalizedMessage).length
-  console.log(normalizedLength);
-
-  console.log('-------------- DESNORMALIZADO --------------');
-  const denormalizeMessage = normalizr.denormalize(
-    normalizedMessage.result,
-    mensages,
-    normalizedMessage.entities,
-  );
-  
-  const denormalizedLength = JSON.stringify(denormalizeMessage).length;
-  console.log(denormalizedLength);
-  console.log(util.inspect(denormalizeMessage, false, 12, true));
-
-  console.log('-------------- COMPRESION --------------');
-console.log(`${Math.round((normalizedLength / denormalizedLength) * 100).toFixed(2)}%`);
-
+    return this.mensaje
   }
+
+  // creatMessage(datos){
+  //   const createMessaWithId = {
+  //     id: this.messageId++,
+  //     ...datos
+  //   };
+  //   this.mensaje.push(createMessaWithId)
+  //   fsDao.escribirArchivo(this.filename,this.mensaje)
+  // }
+
+  // leerMensages(){
+  // const authorSchema = new  normalizr.schema.Entity(
+  //   'author',
+  //   undefined,
+  //   {idAttribute: 'email'}
+  //   );
+
+  // const mesaggeSchema = new normalizr.schema.Entity('message',
+  // {
+  //   author: authorSchema,
+  // });
+
+  // const messagesSchema = new normalizr.schema.Entity('messages',
+  // {
+  //   messages: [mesaggeSchema],
+  // });
+
+  // const originalData = {
+  //   id: '1',
+  //   messages: this.mensaje
+  // }
+
+  // const normalizedData = normalizr.normalize(originalData,messagesSchema);
+
+  //   return normalizedData
+  // }
 
 }
 module.exports = {Memoria,Fecha}

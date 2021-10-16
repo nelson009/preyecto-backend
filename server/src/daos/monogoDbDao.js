@@ -8,9 +8,12 @@ class MongoDbDao {
         this.codigo = []
         this.stock=[]
         this.precio=[]
+        this.mensaje=[]
+        this.productoById=[]
+        this.baseMongoose= "mongodb://localhost:27017/ecommerce"
     }
     async filtroNombre(nombre){
-        await mongoose.connect("mongodb://localhost:27017/ecommerce");
+        await mongoose.connect(this.baseMongoose);
         if(nombre){
             try{
            
@@ -24,7 +27,7 @@ class MongoDbDao {
       }
 
     async filtroPrecio(object){
-        await mongoose.connect("mongodb://localhost:27017/ecommerce");
+        await mongoose.connect(this.baseMongoose);
         if(object){
             if((object.operador) == "="){
                 console.log(object.precio, object.operador)
@@ -42,7 +45,7 @@ class MongoDbDao {
     async filtroCodigo(codigo){
         if(codigo){
             try{
-                await mongoose.connect("mongodb://localhost:27017/ecommerce");
+                await mongoose.connect(this.baseMongoose);
                 this.codigo  = await productos.find({ codigo : codigo})
             }catch (error) {
                 console.log(error)
@@ -53,7 +56,7 @@ class MongoDbDao {
     }
 
     async filterStock(object){
-        await mongoose.connect("mongodb://localhost:27017/ecommerce");
+        await mongoose.connect(this.baseMongoose);
         if(object){
             if((object.operador) == '='){
                 console.log(object.stock, object.operador)
@@ -69,7 +72,7 @@ class MongoDbDao {
     }
 
     creatProduct(producto){
-        mongoose.connect("mongodb://localhost:27017/ecommerce", () => {
+        mongoose.connect(this.baseMongoose, () => {
             console.log("base de datos conectada");
             productos.insertMany(producto,(error, docs) => {
                 if (error) {
@@ -84,7 +87,7 @@ class MongoDbDao {
     }
     
     creatMessage(message){
-        mongoose.connect("mongodb://localhost:27017/ecommerce", () => {
+        mongoose.connect(this.baseMongoose, () => {
             console.log("base de datos conectada");
             mensajes.insertMany(message,(error, docs) => {
                 if (error) {
@@ -98,27 +101,46 @@ class MongoDbDao {
         })
     }
 
-    leerMensages(){
-        console.log("leyendo mensajes de memoria", this.mensaje)
+    async leerMensages(){
+        try {
+            await mongoose.connect(this.baseMongoose);
+            console.log("Base de datos conectada");
+            this.mensaje = await mensajes.find({}) 
+        } catch (error) {
+            console.log(error);
+        }
         
         return this.mensaje
     }
 
     async readProduct(){
         try {
-            await mongoose.connect("mongodb://localhost:27017/ecommerce");
+            await mongoose.connect(this.baseMongoose);
             console.log("Base de datos conectada");
             const result = await productos.find({}) 
             this.productos = result
         } catch (error) {
             console.log(error);
         }
+
         return this.productos
     }
-  
+    
+    async getProductById(id){
+        try{
+            await mongoose.connect(this.baseMongoose);
+            this.productoById  = await productos.findOne({ _id : id})
+            console.log('producto por id',this.productoById);
+        }catch (error) {
+            console.log(error)
+        } 
+       
+        return this.productoById
+    }
+
     async delete(id){
         try {
-            await mongoose.connect("mongodb://localhost:27017/ecommerce");
+            await mongoose.connect(this.baseMongoose);
             console.log("Base de datos conectada");
             console.log(
                 "producto borrado",
@@ -134,7 +156,7 @@ class MongoDbDao {
 
     async update (producto,id) {
         try{
-            await mongoose.connect("mongodb://localhost:27017/ecommerce");
+            await mongoose.connect(this.baseMongoose);
             console.log("Base de datos conectada");
             console.log(
                 "producto actualizado",

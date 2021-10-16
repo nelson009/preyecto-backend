@@ -1,3 +1,4 @@
+const {optionsSqlite3} = require("../options/mariaDB")
 
  class Sqlite3Dao {
   constructor(){
@@ -8,12 +9,13 @@
     this.stock=[]
     this.tableName = "productos";
     this.messageTable= "messages";
+    this.mensaje=[]
 
   }
 
   async filtroNombre(nombre){
     if(nombre){ 
-      const knex = require("knex")({client: "sqlite3",connection: {filename: "./DB/ecommerce.sqlite",},useNullAsDefault: true,});
+      const knex = require("knex")(optionsSqlite3);
       this.filtroName = await knex.from(this.tableName).where("title", "=", nombre).select("*");
     }
 
@@ -22,7 +24,7 @@
 
   async filtroPrecio(object){
     if(object){
-      const knex = require("knex")({client: "sqlite3",connection: {filename: "./DB/ecommerce.sqlite",},useNullAsDefault: true,});
+      const knex = require("knex")(optionsSqlite3);
       this.precio = await knex.from(this.tableName).where("precio", object.operador, object.precio).select("*");
     }
 
@@ -31,7 +33,7 @@
 
   async filtroCodigo(codigo){
     if(codigo){
-      const knex = require("knex")({client: "sqlite3",connection: {filename: "./DB/ecommerce.sqlite",},useNullAsDefault: true,});
+      const knex = require("knex")(optionsSqlite3);
       this.codigo= await knex.from(this.tableName).where("codigo", "=", codigo).select("*"); 
     }
 
@@ -40,7 +42,7 @@
 
   async filterStock(object){
     if(object){
-    const knex = require("knex")({client: "sqlite3",connection: {filename: "./DB/ecommerce.sqlite",},useNullAsDefault: true,});
+    const knex = require("knex")(optionsSqlite3);
     this.stock = await knex.from( this.tableName).where("stock", object.operador, object.stock).select("*");
     }
 
@@ -48,7 +50,7 @@
   }
 
   async readProduct(){
-    const knex = require("knex")({client: "sqlite3",connection: {filename: "./DB/ecommerce.sqlite",},useNullAsDefault: true,});
+    const knex = require("knex")(optionsSqlite3);
     try{
       await this.iniciarTabla()
       this.productos = await knex(this.tableName).select("*");
@@ -62,8 +64,15 @@
     return this.productos
   }
 
+  async getProductById(id){
+    const knex = require("knex")(optionsSqlite3);
+    const result= await knex.from(this.tableName).where("id", "=", id).select("*"); 
+    
+    return result
+  }
+
   async iniciarTabla (){
-    const knex = require("knex")({client: "sqlite3",connection: {filename: "./DB/ecommerce.sqlite",},useNullAsDefault: true,});
+    const knex = require("knex")(optionsSqlite3);
     try{
       if(!await knex.schema.hasTable(this.tableName)){
         await knex.schema.createTable(this.tableName, (table) => {
@@ -88,7 +97,7 @@
   }
 
   async creatProduct(Product){
-    const knex = require("knex")({client: "sqlite3",connection: {filename: "./DB/ecommerce.sqlite",},useNullAsDefault: true,});
+    const knex = require("knex")(optionsSqlite3);
     try{
       await this.iniciarTabla()
       await knex(this.tableName).insert(Product);
@@ -102,14 +111,8 @@
     }
   }
 
-  leerMensages(){
-    console.log("leyendo mensajes de memoria", this.mensaje)
-    
-    return this.mensaje
-  }
-
   async delete(id){
-    const knex = require("knex")({client: "sqlite3",connection: {filename: "./DB/ecommerce.sqlite",},useNullAsDefault: true,});
+    const knex = require("knex")(optionsSqlite3);
     try {
       await knex.from(this.tableName).where("id", "=", `${id}`).del();
     console.log("producto eliminado");
@@ -122,7 +125,7 @@
   }
 
   async update (producto,id) {
-    const knex = require("knex")({client: "sqlite3",connection: {filename: "./DB/ecommerce.sqlite",},useNullAsDefault: true,});
+    const knex = require("knex")(optionsSqlite3);
     try {
       await knex.from(this.tableName).where("id", "=", `${id}`)
       .update("title",`${ producto.title}`)
@@ -139,7 +142,7 @@
   }
 
   async creatMessage(message){
-    const knex = require("knex")({client: "sqlite3",connection: {filename: "./DB/ecommerce.sqlite",},useNullAsDefault: true,});
+    const knex = require("knex")(optionsSqlite3);
     try{
       await this.creatTableMessage()
       await knex(this.messageTable).insert(message);
@@ -152,9 +155,9 @@
   }
 
   async creatTableMessage(){
-    const knex = require("knex")({client: "sqlite3",connection: {filename: "./DB/ecommerce.sqlite",},useNullAsDefault: true,});
-    if(!await knex.schema.hasTable("messages")){
-      await knex.schema.createTable("messages", (table) => {
+    const knex = require("knex")(optionsSqlite3);
+    if(!await knex.schema.hasTable(this.messageTable)){
+      await knex.schema.createTable(this.messageTable, (table) => {
         table.increments("id");
         table.string("email");
         table.string("fecha");
@@ -162,6 +165,21 @@
         });
       console.log("tabla creada");
     }
+  }
+
+  async leerMensages(){
+    const knex = require("knex")(optionsSqlite3);
+    try{
+      await this.creatTableMessage()
+      this.mensaje = await knex(this.messageTable).select("*");
+    }catch (error) {
+      console.log(error);
+    }
+    finally {
+      knex.destroy();
+    }
+
+    return this.mensaje
   }
 }
 

@@ -7,11 +7,14 @@ class MongoDBaaSDao {
        this.codigo = []
        this.stock=[]
        this.precio=[]
+       this.mensaje=[]
+       this.productoById
+       this.baseMongoose= "mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority"
     }
     async filtroNombre(nombre){
         if(nombre){
             try{
-                await mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority");
+                await mongoose.connect(this.baseMongoose);
                 this.filtroName  = await productos.find({ title : nombre})
             }catch (error) {
                 console.log(error)
@@ -27,7 +30,7 @@ class MongoDBaaSDao {
       async filtroPrecio(object){
         
         if(object){
-            await mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority");
+            await mongoose.connect(this.baseMongoose);
             if((object.operador) == "="){
                 console.log(object.precio, object.operador)
                 this.precio =  await productos.find({ precio: +object.precio})
@@ -44,7 +47,7 @@ class MongoDBaaSDao {
     async filtroCodigo(codigo){
         if(codigo){
             try{
-                await mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority");
+                await mongoose.connect(this.baseMongoose);
                 this.codigo  = await productos.find({ codigo : codigo})
             }catch (error) {
                 console.log(error)
@@ -60,7 +63,7 @@ class MongoDBaaSDao {
    
     async filterStock(object){
         if(object){
-            await mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority");
+            await mongoose.connect(this.baseMongoose);
             if((object.operador) == '='){
                 console.log(object.stock, object.operador)
                 this.stock =  await productos.find({ stock: +object.stock})
@@ -76,7 +79,7 @@ class MongoDBaaSDao {
     }
 
     creatProduct(producto){
-        mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority", () => {
+        mongoose.connect(this.baseMongoose, () => {
             console.log("base de datos conectada");
             productos.insertMany(producto,(error, docs) => {
                 if (error) {
@@ -92,7 +95,7 @@ class MongoDBaaSDao {
     }
     
     creatMessage(message){
-        mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority", () => {
+        mongoose.connect(this.baseMongoose, () => {
             console.log("base de datos conectada");
             mensajes.insertMany(message,(error, docs) => {
                 if (error) {
@@ -106,15 +109,21 @@ class MongoDBaaSDao {
         })
     }
 
-    leerMensages(){
-        console.log("leyendo mensajes de memoria", this.mensaje)
+    async leerMensages(){
+        try {
+            await mongoose.connect(this.baseMongoose);
+            console.log("Base de datos conectada");
+            this.mensaje = await mensajes.find({}) 
+        } catch (error) {
+            console.log(error);
+        }
         
         return this.mensaje
       }
-      
+
     async readProduct(){
         try {
-            await mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority");
+            await mongoose.connect(this.baseMongoose);
             console.log("Base de datos conectada");
             this.productos = await productos.find({}) 
          } catch (error) {
@@ -122,10 +131,22 @@ class MongoDBaaSDao {
          }
         return this.productos
     }
+
+    async getProductById(id){
+        try{
+            await mongoose.connect(this.baseMongoose);
+            this.productoById  = await productos.findOne({ _id : id})
+            console.log('producto por id',this.productoById);
+        }catch (error) {
+            console.log(error)
+        } 
+       
+        return this.productoById
+    }
   
     async delete(id){
         try {
-            await mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority");
+            await mongoose.connect(this.baseMongoose);
             console.log("Base de datos conectada");
             console.log(
                 "producto borrado",
@@ -140,7 +161,7 @@ class MongoDBaaSDao {
     }
     async update (producto,id) {
         try{
-            await mongoose.connect("mongodb+srv://nelson:1521992@cluster0.2vdgf.mongodb.net/ecommerce?retryWrites=true&w=majority");
+            await mongoose.connect(this.baseMongoose);
             console.log("Base de datos conectada");
             console.log(
                 "producto actualizado",

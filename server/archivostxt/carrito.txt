@@ -1,18 +1,44 @@
 [
 	{
 		"producto": {
-			"0": {
-				"title": "leche",
-				"precio": 1000,
-				"thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyOAEjgVXBwJZ-XAcJVPQrNEcwcPT35tcdfw&usqp=CAU",
-				"codigo": "liquido",
-				"stock": 1000,
-				"descripcion": "pueba nada",
-				"timestamp": "08/10/2021 1:5:6",
-				"id": 1
-			}
+			"title": "leche",
+			"precio": 2,
+			"thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyOAEjgVXBwJZ-XAcJVPQrNEcwcPT35tcdfw&usqp=CAU",
+			"codigo": "masa",
+			"stock": 2,
+			"descripcion": "masa",
+			"timestamp": "15/10/2021 20:29:16",
+			"id": 1
 		},
 		"id": 1,
-		"timestamp": "08/10/2021 1:5:10"
+		"timestamp": "15/10/2021 20:29:37"
+	},
+	{
+		"producto": {
+			"title": "arroz",
+			"precio": 2,
+			"thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyOAEjgVXBwJZ-XAcJVPQrNEcwcPT35tcdfw&usqp=CAU",
+			"codigo": "masa",
+			"stock": 2,
+			"descripcion": "masa",
+			"timestamp": "15/10/2021 20:29:21",
+			"id": 2
+		},
+		"id": 2,
+		"timestamp": "15/10/2021 20:29:40"
+	},
+	{
+		"producto": {
+			"title": "maiz",
+			"precio": 2,
+			"thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyOAEjgVXBwJZ-XAcJVPQrNEcwcPT35tcdfw&usqp=CAU",
+			"codigo": "masa",
+			"stock": 2,
+			"descripcion": "masa",
+			"timestamp": "15/10/2021 20:29:30",
+			"id": 3
+		},
+		"id": 3,
+		"timestamp": "15/10/2021 20:29:42"
 	}
 ]

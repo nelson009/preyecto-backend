@@ -95,27 +95,16 @@ server.listen(port,() => {
 })
 
 //RUTAS PRODUCTOS
- productoRouter.get("/listar",async (req,res) => {
-    if(isAdmin){
-        const listar = await dao.readProduct()
-         // res.status(200).send(JSON.stringify(result))
-        res.status(200).send(listar)
-        return
-    }
-    res.status(404).send({error:"no hay productos cargados"})
-    
-})
 
-productoRouter.get("/listar/:id", (req,res) => {
-    if(isAdmin){
-        const { id } = req.params
-        const result = memoria.getProductById(id)
-        if(result){
-            res.status(200).send(JSON.stringify(result))
-            return
-        }
+productoRouter.get("/listar/:id?",async (req,res) => {
+    const { id } =  (req.params)
+    if(id){
+    
+        return res.status(200).send(await dao.getProductById(id))
     }
-    res.status(404).send({error:"producto no encontrado"})
+
+    res.status(200).send(await dao.readProduct());
+    
 })
 
 productoRouter.post("/guardar", async(req,res) =>{
@@ -187,20 +176,20 @@ productoRouter.get("/vista-test", ( req, res) => {
 
 
 //RUTAS CARRITO
-carritoRouter.get("/listar", (req,res) => {
-    if(isAdmin){
-        res.status(200).send(carrito.getCarrito());
-        return
+carritoRouter.get("/listar/:id?", (req,res) => {
+    const { id } =  (req.params)
+    if(!isNaN(id)){
+    
+        return res.status(200).send(carrito.getCarritoById(id))
     }
-       const error = {error:1,descripcion:`/carrito/listar get no autorizada`}
-       res.status(200).send(error)
-   
+
+    res.status(200).send(carrito.getCarrito());
 })
 
 carritoRouter.post("/agregar/:id", (req,res) => {
     if(isAdmin){
         const {id} = req.params
-        const result = dao.readProduct(id)
+        const result =  dao.getProductById(id)
         res.status(200).send(carrito.addCarrito(result))
         return
     }

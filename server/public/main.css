@@ -122,6 +122,9 @@ form fieldset {
 .formulario {
   background-color: black;
 }
+.avatarMensajes {
+  padding-left: 5px;
+}
 
 .footerAjustar {
   margin-top: 180px;

@@ -56,36 +56,105 @@ const clearInput = () =>{
 
 socket.on("messages", (data) =>{
     console.log(data)
-    // document.getElementById("messages").innerHTML = data.map(
-    // ({email,texto,fecha}) => 
-    // `
-    // <div class="mb-3">
-    // <strong class="email-color">${email}</strong>
-    // <span class="fecha-color">[${fecha}]:</span>
-    // <em class="text-color">${texto}</em>
-    // </div>
-    // `
-    // ).join(" ");
-    // clearInput();
+    document.getElementById("messages").innerHTML = data.map(
+    ({email,texto,fecha}) => 
+    `
+    <div class="mb-3">
+    <strong class="email-color">${email}</strong>
+    <span class="fecha-color">[${fecha}]:</span>
+    <em class="text-color">${texto}</em>
+    </div>
+    `
+    ).join(" ");
+    clearInput();
 })
 
 const addMessage = () =>{
     if(document.getElementById("email").value.length > 0){
     const message = {
-        author: {
-            email: document.getElementById("email").value,
-            fecha: Fecha(),
-            nombre: document.getElementById("messageNombre").value,
-            apellido: document.getElementById("messageApellido").value,
-            edad: document.getElementById("messageEdad").value,
-            alias: document.getElementById("messaAlias").value,
-        },
+        email: document.getElementById("email").value,
+        fecha: Fecha(),
         texto: document.getElementById("texto").value,
-    }
+        };
+   
     socket.emit("new-message", message);
     }
     return false
 }
+
+// socket.on("messages", (data) =>{
+//     const authorSchema = new  normalizr.schema.Entity(
+//         'author',
+//         undefined,
+//         {idAttribute: 'email'});
+    
+//     const mesaggeSchema = new normalizr.schema.Entity('message',
+//     {
+//         author: authorSchema,
+//     });
+    
+//     const messagesSchema = new normalizr.schema.Entity('messages',
+//     {
+//         messages: [mesaggeSchema],
+//     });
+  
+//     console.log('-------------- NORMALIZADO --------------')
+
+//     console.log(data)
+//     const normalizedLength = JSON.stringify(data).length
+//     console.log(normalizedLength);
+
+//     console.log('-------------- DESNORMALIZADO --------------');
+
+//     const denormalizedData = normalizr.denormalize(
+//     data.result,
+//     messagesSchema,
+//     data.entities,
+//     );
+//     console.log(denormalizedData);
+//     const denormalizedLength = JSON.stringify(denormalizedData).length;
+//     console.log(denormalizedLength);
+
+//     console.log('-------------- COMPRESION --------------');
+
+//     const compresion = `${Math.round((normalizedLength / denormalizedLength) * 100).toFixed(2)}%`
+//     console.log(compresion);
+
+//     document.getElementById("messages").innerHTML = denormalizedData.messages.map(
+//     ({texto,author,fecha}) => 
+//     `
+//     <div class="mb-3">
+//     <strong class="email-color">${author.email}</strong>
+//     <span class="fecha-color">[${fecha}]:</span>
+//     <em class="text-color">${texto}</em>
+//     <img src='${author.avatar}'height="30" width="30" class="avatarMensajes">
+//     </div>
+//     `
+//     ).join(" ");
+//     clearInput();
+    
+//     document.getElementById("compresion").innerHTML = `Centro de Mensajes (${compresion})`
+       
+// })
+
+// const addMessage = () =>{
+//     if(document.getElementById("email").value.length > 0){
+//     const message = {
+//         author: {
+//             email: document.getElementById("email").value,
+//             nombre: document.getElementById("messageNombre").value,
+//             apellido: document.getElementById("messageApellido").value,
+//             edad: document.getElementById("messageEdad").value,
+//             alias: document.getElementById("messaAlias").value,
+//             avatar: document.getElementById("messageAvatar").value,
+//         },
+//         texto: document.getElementById("texto").value,
+//         fecha: Fecha(),
+//     }
+//     socket.emit("new-message", message);
+//     }
+//     return false
+// }
 
 //Filtros
 const creatTable = (divHtml,data)=>{
@@ -124,16 +193,6 @@ const filtroNombre = () =>{
     socket.emit("Name",document.getElementById("nombre").value)
     return false
 }
-
-//filtro por precio
-// socket.on("rango", (data) =>{
-//     console.log(data)
-//     creatTable("Precio",data)
-// })
-// const filtroPrecio = () =>{
-//     socket.emit("precio",document.getElementById("Price").value)
-//     return false
-// }
 
 //filtro por precio
 socket.on("rango", (data) =>{

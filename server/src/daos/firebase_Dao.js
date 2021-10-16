@@ -16,6 +16,9 @@ class FireBaseDao {
     this.codigo = []
     this.stock=[]
     this.precio=[]
+    this.mensaje=[]
+    this.productoById=[]
+    this.collectionMensajes= "mensajes"
    
   } 
 
@@ -138,6 +141,18 @@ class FireBaseDao {
     return  this.productos
   }
 
+  async getProductById(id){
+    try{
+      let result = await this.readProduct()
+      this.productoById = result.find(element => element.id == id)
+    }catch (error) {
+      console.log(error);
+    }
+
+    return this.productoById
+
+  }
+
   async creatProduct(producto){
     console.log("CREATE");
     try{
@@ -181,7 +196,7 @@ class FireBaseDao {
 
   async creatMessage(datos){
     const firestoreAdmin = firebaseAdmin.firestore();
-    const collection = firestoreAdmin.collection("mensajes");
+    const collection = firestoreAdmin.collection(this.collectionMensajes);
     try{
       await collection.doc().create(datos)
     }catch (error) {
@@ -189,9 +204,22 @@ class FireBaseDao {
     }
   }
 
-  leerMensages(){
-    console.log("leyendo mensajes de memoria", this.mensaje)
-    
+  async leerMensages(){
+    try{
+      const queryGet = await firestoreAdmin.collection(this.collectionMensajes).get();
+      this.mensaje = queryGet.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        email: data.email,
+        fecha: data.fecha,
+        texto: data.texto,
+      }
+      })
+    }catch (error) {
+      console.log(error);
+    }
+
     return this.mensaje
   }
 }
