@@ -150,7 +150,6 @@ class FireBaseDao {
     }
 
     return this.productoById
-
   }
 
   async creatProduct(producto){

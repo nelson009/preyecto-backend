@@ -64,11 +64,10 @@ const {optionsSqlite3} = require("../options/mariaDB")
     return this.productos
   }
 
-  async getProductById(id){
-    const knex = require("knex")(optionsSqlite3);
-    const result= await knex.from(this.tableName).where("id", "=", id).select("*"); 
-    
-    return result
+  async getProductById(id){ 
+    let result= await this.readProduct()
+    const idProduct = result.find((element => element.id === +id))
+    return idProduct
   }
 
   async iniciarTabla (){

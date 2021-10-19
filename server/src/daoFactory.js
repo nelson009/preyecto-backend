@@ -1,5 +1,6 @@
 
 const FireBaseDao = require("./daos/firebase_Dao");
+const FsDao = require("./daos/fsDao");
 const { Memoria } = require("./daos/memoria");
 const MongoDBaaSDao = require("./daos/MongoDBaaSDao");
 const MongoDbDao = require("./daos/monogoDbDao");
@@ -23,6 +24,8 @@ class DaoFactory {
                 return new FireBaseDao()
             case 5:
                 return new Sqlite3Dao()
+            case 6:
+                return new FsDao
             default:
                 return new Memoria()
         }

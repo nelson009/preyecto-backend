@@ -25,7 +25,8 @@ const MONGODB = 2;
 const MONGODBAASDOO = 3;
 const FIREBASEDAO = 4;
 const SQLITE3DAO = 5;
-const OPTION = MEMORIA
+const FSDAO = 6
+const OPTION = MONGODBAASDOO
 const dapFactory = new DaoFactory()
 const dao = dapFactory.getDao(OPTION)
 let isAdmin = true || false
@@ -176,20 +177,20 @@ productoRouter.get("/vista-test", ( req, res) => {
 
 
 //RUTAS CARRITO
-carritoRouter.get("/listar/:id?", (req,res) => {
+carritoRouter.get("/listar/:id?", async(req,res) => {
     const { id } =  (req.params)
     if(!isNaN(id)){
     
         return res.status(200).send(carrito.getCarritoById(id))
     }
 
-    res.status(200).send(carrito.getCarrito());
+    res.status(200).send(await carrito.getCarrito());
 })
 
-carritoRouter.post("/agregar/:id", (req,res) => {
+carritoRouter.post("/agregar/:id", async (req,res) => {
     if(isAdmin){
         const {id} = req.params
-        const result =  dao.getProductById(id)
+        const result = await dao.getProductById(id)
         res.status(200).send(carrito.addCarrito(result))
         return
     }

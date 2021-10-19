@@ -67,10 +67,11 @@ const util = require("util");
 
   
   async getProductById(id){
-    const knex = require("knex")(options);
-    const result= await knex.from(this.tableName).where("id", "=", id).select("*"); 
-    
-    return result
+    // const knex = require("knex")(options);
+    // const result= await knex.from(this.tableName).where("id", "=", id).select("*"); 
+    let result= await this.readProduct()
+    const idProduct = result.find((element => element.id === +id))
+    return idProduct
   }
 
   async iniciarTabla (){

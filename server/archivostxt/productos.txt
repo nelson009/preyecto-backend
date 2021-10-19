@@ -1,12 +1,32 @@
 [
 	{
-		"title": "1",
-		"precio": 2,
+		"title": "arroz",
+		"precio": 100,
 		"thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyOAEjgVXBwJZ-XAcJVPQrNEcwcPT35tcdfw&usqp=CAU",
-		"codigo": "masa",
-		"stock": 2,
-		"descripcion": "masa",
-		"timestamp": "16/10/2021 11:51:1",
+		"codigo": "legumbre",
+		"stock": 150,
+		"descripcion": "fino",
+		"timestamp": "19/10/2021 9:5:22",
 		"id": 1
+	},
+	{
+		"title": "arroz",
+		"precio": 100,
+		"thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyOAEjgVXBwJZ-XAcJVPQrNEcwcPT35tcdfw&usqp=CAU",
+		"codigo": "legumbre",
+		"stock": 150,
+		"descripcion": "fino",
+		"timestamp": "19/10/2021 9:5:23",
+		"id": 2
+	},
+	{
+		"title": "arroz",
+		"precio": 100,
+		"thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyOAEjgVXBwJZ-XAcJVPQrNEcwcPT35tcdfw&usqp=CAU",
+		"codigo": "legumbre",
+		"stock": 150,
+		"descripcion": "fino",
+		"timestamp": "19/10/2021 9:5:24",
+		"id": 3
 	}
 ]
