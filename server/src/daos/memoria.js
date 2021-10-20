@@ -1,8 +1,6 @@
 const util = require("util");
 const normalizr = require("normalizr")
-const fs = require("fs");
 const { normalize } = require("path");
-const FsDao = require("./fsDao");
 const Fecha = () => {
     const hoy = new Date()
     let dia= hoy.getDate();
@@ -16,7 +14,7 @@ const Fecha = () => {
     const fecha = `${dia}/${mes}/${año} ${hora}:${minutos}:${segundos}`
     return fecha
 }
-const fsDao = new FsDao()
+
 class Memoria {
   constructor() {
     this.productos = [];
@@ -25,7 +23,6 @@ class Memoria {
     this.precio=[]
     this.codigo = []
     this.stock=[]
-    this.filename= "./archivostxt/mensajes.txt" 
     this.mensaje = []
     this.messageId=0
   }
@@ -91,7 +88,6 @@ class Memoria {
   creatProduct(producto){
     this.productos.push({...producto,id:this.count+1});
     this.count++
-    fsDao.escribirArchivo("./archivostxt/productos.txt",this.productos)
     return this.productos
   }
 
@@ -106,49 +102,48 @@ class Memoria {
     return this.productos
     }
 
+  // ESTE ES EL CENTRO DE MENSAJES
   creatMessage(datos){
-    this.mensaje.push(datos)
-    fsDao.escribirArchivo(this.filename,this.mensaje)
+    const createMessaWithId = {
+      id: this.messageId++,
+      ...datos
+    };
+    this.mensaje.push(createMessaWithId)
   }
 
   leerMensages(){
-    return this.mensaje
+  const authorSchema = new  normalizr.schema.Entity(
+    'author',
+    undefined,
+    {idAttribute: 'email'}
+    );
+
+  const mesaggeSchema = new normalizr.schema.Entity('message',
+    {
+      author: authorSchema,
+    });
+
+  const messagesSchema = new normalizr.schema.Entity('messages',
+    {
+      messages: [mesaggeSchema],
+    });
+
+  const originalData = {
+      id: '1',
+      messages: this.mensaje
+    }
+
+  const normalizedData = normalizr.normalize(originalData,messagesSchema);
+
+    return normalizedData
   }
 
   // creatMessage(datos){
-  //   const createMessaWithId = {
-  //     id: this.messageId++,
-  //     ...datos
-  //   };
-  //   this.mensaje.push(createMessaWithId)
-  //   fsDao.escribirArchivo(this.filename,this.mensaje)
+  //   this.mensaje.push(datos)
   // }
 
   // leerMensages(){
-  // const authorSchema = new  normalizr.schema.Entity(
-  //   'author',
-  //   undefined,
-  //   {idAttribute: 'email'}
-  //   );
-
-  // const mesaggeSchema = new normalizr.schema.Entity('message',
-  // {
-  //   author: authorSchema,
-  // });
-
-  // const messagesSchema = new normalizr.schema.Entity('messages',
-  // {
-  //   messages: [mesaggeSchema],
-  // });
-
-  // const originalData = {
-  //   id: '1',
-  //   messages: this.mensaje
-  // }
-
-  // const normalizedData = normalizr.normalize(originalData,messagesSchema);
-
-  //   return normalizedData
+  //   return this.mensaje
   // }
 
 }

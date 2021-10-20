@@ -1,28 +1,5 @@
 {
 	"id": 1,
-	"productos": [
-		{
-			"_id": "616a3a042e1ef9ea37306b73",
-			"title": "maiz",
-			"precio": 2,
-			"thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyOAEjgVXBwJZ-XAcJVPQrNEcwcPT35tcdfw&usqp=CAU",
-			"codigo": "masa",
-			"stock": 2,
-			"timestamp": "15/10/2021 23:33:39",
-			"descripcion": "masa",
-			"__v": 0
-		},
-		{
-			"_id": "616a3d1b2e1ef9ea37306b7c",
-			"title": "leche",
-			"precio": 2,
-			"thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyOAEjgVXBwJZ-XAcJVPQrNEcwcPT35tcdfw&usqp=CAU",
-			"codigo": "masa",
-			"stock": 2,
-			"timestamp": "15/10/2021 23:46:51",
-			"descripcion": "masa",
-			"__v": 0
-		}
-	],
-	"timestamp": "19/10/2021 9:7:21"
+	"productos": [],
+	"timestamp": "20/10/2021 16:16:4"
 }

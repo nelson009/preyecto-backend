@@ -2,22 +2,20 @@ const express = require("express")
 const faker = require("faker")
 const Carrito = require("./carrito");
 const { Memoria,Fecha} = require("./src/daos/memoria")
-const MysqlDao = require("./src/daos/mysqlDbDao")
-const MongoDbDao = require("./src/daos/monogoDbDao")
+const session = require('express-session')
+ 
 const  handlebars   =  require ( 'express-handlebars' )
 const http = require("http");
 const io = require("socket.io");
 const DaoFactory = require("./src/daoFactory");
 const app = express()
 const port = 8080;
-// const messages= []
+
 const server = http.Server(app);
 const ioServer = io(server);
 const carritoRouter = express.Router();
 const productoRouter = express.Router();
-const memoria = new Memoria()
 const carrito = new Carrito()
-const mysqlDao = new MysqlDao()
 
 const MEMORIA = 0;
 const MYSQL = 1;
@@ -26,11 +24,19 @@ const MONGODBAASDOO = 3;
 const FIREBASEDAO = 4;
 const SQLITE3DAO = 5;
 const FSDAO = 6
-const OPTION = MONGODBAASDOO
+const OPTION = MEMORIA
 const dapFactory = new DaoFactory()
 const dao = dapFactory.getDao(OPTION)
+const sessionHandler = session(
+    {
+        secret: 'secreto',
+        resave: true,
+        saveUninitialized: true,
+    }
+)
 let isAdmin = true || false
 
+app.use(sessionHandler);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(`${__dirname}/public`))
@@ -54,13 +60,13 @@ server.on("error",(error)=>{
         throw Error(`Error inicando el servidor: ${error}`);
     }
 })
+
 server.listen(port,() => {
    console.log(`El servidor es escuchando en el port ${port}`);
 })
 
 // SOCKET
  ioServer.on("connection", async (socket) => {
-    // const arrayProducts = memoria.readProduct()
     console.log('se conecto en el backen');
     socket.emit('cargarProductos', await dao.readProduct())
 
@@ -147,8 +153,10 @@ productoRouter.delete("/borrar/:id", (req,res) =>{
     res.status(200).send( dao.delete(id)) 
 })
 
-app.get("/",(req,res) => {
-    res.sendFile(__dirname + '/public/index.html');
+//RUTA LOGIN
+app.get("/login",(req,res) => {
+    // res.sendFile(__dirname + '/public/index.html');
+    res.sendFile(__dirname + '/public/formularioIngreso.html');
 })
 
 //RUTA PRODUCTO VISTA
@@ -179,18 +187,20 @@ productoRouter.get("/vista-test", ( req, res) => {
 //RUTAS CARRITO
 carritoRouter.get("/listar/:id?", async(req,res) => {
     const { id } =  (req.params)
-    if(!isNaN(id)){
+    // if(!isNaN(id)){
+    if(id){
     
-        return res.status(200).send(carrito.getCarritoById(id))
+        return res.status(200).send(await carrito.getCarritoById(id))
     }
 
     res.status(200).send(await carrito.getCarrito());
 })
 
 carritoRouter.post("/agregar/:id", async (req,res) => {
-    if(isAdmin){
-        const {id} = req.params
-        const result = await dao.getProductById(id)
+    // if(isAdmin){
+    const {id} = req.params
+    const result = await dao.getProductById(id)
+    if(result){
         res.status(200).send(carrito.addCarrito(result))
         return
     }

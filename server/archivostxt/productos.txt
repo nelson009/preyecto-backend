@@ -1,32 +1,10 @@
 [
 	{
-		"title": "arroz",
-		"precio": 100,
-		"thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyOAEjgVXBwJZ-XAcJVPQrNEcwcPT35tcdfw&usqp=CAU",
-		"codigo": "legumbre",
-		"stock": 150,
-		"descripcion": "fino",
-		"timestamp": "19/10/2021 9:5:22",
+		"title": "1",
+		"precio": "2",
+		"thumbnail": "https://cdn3.iconfinder.com/data/icons/social-media-2179/48/17-Google_chrome-128.png",
+		"submit": "Enviar ",
+		"timestamp": "20/10/2021 3:7:36",
 		"id": 1
-	},
-	{
-		"title": "arroz",
-		"precio": 100,
-		"thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyOAEjgVXBwJZ-XAcJVPQrNEcwcPT35tcdfw&usqp=CAU",
-		"codigo": "legumbre",
-		"stock": 150,
-		"descripcion": "fino",
-		"timestamp": "19/10/2021 9:5:23",
-		"id": 2
-	},
-	{
-		"title": "arroz",
-		"precio": 100,
-		"thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyOAEjgVXBwJZ-XAcJVPQrNEcwcPT35tcdfw&usqp=CAU",
-		"codigo": "legumbre",
-		"stock": 150,
-		"descripcion": "fino",
-		"timestamp": "19/10/2021 9:5:24",
-		"id": 3
 	}
 ]

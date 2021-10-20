@@ -30,7 +30,7 @@ class Carrito {
 
     getCarritoById(id) {
         let getId = this.getCarrito()
-        const result=  getId.productos.find(elemento => elemento.id === +id) 
+        const result=  getId.productos.find(elemento => elemento.id == id) 
         return result
     }
 
@@ -51,7 +51,7 @@ class Carrito {
 
     deleteCarrito(id) {
         const result=this.getCarrito()
-        this.productoGet.productos = result.productos.filter( elemento => elemento.id !== +id)
+        this.productoGet.productos = result.productos.filter( elemento => elemento.id != id)
         fsDao.escribirArchivo(this.fileName ,this.productoGet)
       
         return this.productoGet

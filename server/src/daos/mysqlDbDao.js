@@ -61,7 +61,6 @@ const util = require("util");
     finally {
       knex.destroy();
     }
-    console.log('lectura Product',this.productos);
     return this.productos
   }
 
